@@ -3,6 +3,7 @@ package hr.antitalent.tanks_backend.models;
 import hr.antitalent.tanks_backend.enums.GameEventType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 public class GameEvent {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -25,6 +26,8 @@ public class GameEvent {
     @Enumerated(EnumType.STRING)
     private GameEventType eventType;
 
+    @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime eventTime;
 
     @Column(columnDefinition = "jsonb")

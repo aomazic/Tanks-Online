@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Leaderboard {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne

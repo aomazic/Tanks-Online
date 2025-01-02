@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class GameSessionPlayer {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
