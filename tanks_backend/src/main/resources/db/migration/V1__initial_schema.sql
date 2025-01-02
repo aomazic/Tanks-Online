@@ -33,10 +33,13 @@ CREATE TABLE IF NOT EXISTS game.team (
 
 CREATE TABLE IF NOT EXISTS game.game_session (
                                          id integer PRIMARY KEY,
+                                         name          varchar UNIQUE NOT NULL,
+                                         password      varchar,
                                          status varchar,
                                          winner_team_id integer,
                                          start_time timestamp,
                                          end_time timestamp,
+                                         game_settings jsonb,
                                          summary jsonb,
                                          created_at timestamp,
                                          updated_at timestamp
