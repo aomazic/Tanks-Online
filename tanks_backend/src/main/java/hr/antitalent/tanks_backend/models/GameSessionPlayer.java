@@ -2,6 +2,7 @@ package hr.antitalent.tanks_backend.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class GameSessionPlayer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne
@@ -31,6 +32,11 @@ public class GameSessionPlayer {
 
     private Integer kills = 0;
     private Integer deaths = 0;
+
+    @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime joinedAt;
+
+    @Column(updatable = false)
     private LocalDateTime leftAt;
 }
