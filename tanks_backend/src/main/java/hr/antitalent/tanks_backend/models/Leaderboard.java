@@ -1,4 +1,4 @@
-package hr.antitalent.tanks_backend.model;
+package hr.antitalent.tanks_backend.models;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class Leaderboard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

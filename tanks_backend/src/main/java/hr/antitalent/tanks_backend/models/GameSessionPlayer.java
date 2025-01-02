@@ -1,4 +1,4 @@
-package hr.antitalent.tanks_backend.model;
+package hr.antitalent.tanks_backend.models;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class GameSessionPlayer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "player_id", referencedColumnName = "id")

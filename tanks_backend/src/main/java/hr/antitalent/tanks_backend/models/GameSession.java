@@ -1,4 +1,4 @@
-package hr.antitalent.tanks_backend.model;
+package hr.antitalent.tanks_backend.models;
 
 import hr.antitalent.tanks_backend.enums.GameSessionStatus;
 import jakarta.persistence.*;
@@ -17,7 +17,7 @@ import java.util.List;
 public class GameSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String name;
