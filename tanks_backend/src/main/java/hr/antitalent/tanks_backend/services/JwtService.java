@@ -1,4 +1,4 @@
-﻿package hr.antitalent.tanks_backend.services;
+package hr.antitalent.tanks_backend.services;
 
 import hr.antitalent.tanks_backend.models.User;
 import io.jsonwebtoken.Claims;
@@ -6,6 +6,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -13,6 +15,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+
+import static hr.antitalent.tanks_backend.configurations.CacheConfig.AUTH_CACHE;
 
 @Service
 public class JwtService {
@@ -26,15 +30,16 @@ public class JwtService {
     /**
      * Extract the username (subject) from the token.
      */
+    @Cacheable(cacheNames = AUTH_CACHE, cacheManager = "authCacheManager", key = "#token")
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return extractClaimFromToken(token, Claims::getSubject);
     }
 
     /**
      * Extract a specific claim from the token.
      */
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
+    public <T> T extractClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
@@ -72,7 +77,8 @@ public class JwtService {
     /**
      * Validate if the token matches the user's username and is not expired.
      */
-    public boolean isTokenValid(String token, User user) {
+    @Cacheable(cacheNames = AUTH_CACHE, cacheManager = "authCacheManager", key = "#token + #user.username")
+    public boolean isTokenValid(String token, UserDetails user) {
         final String username = extractUsername(token);
         return (username.equals(user.getUsername())) && !isTokenExpired(token);
     }
@@ -88,13 +94,13 @@ public class JwtService {
      * Extract expiration date from the token.
      */
     private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+        return extractClaimFromToken(token, Claims::getExpiration);
     }
 
     /**
      * Extract all claims from the token.
      */
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSignInKey()) // Correct use for HS256
                 .build()

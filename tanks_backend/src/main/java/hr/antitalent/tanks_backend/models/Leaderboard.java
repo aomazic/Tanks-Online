@@ -1,7 +1,9 @@
 package hr.antitalent.tanks_backend.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,8 +14,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Leaderboard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,11 +23,11 @@ public class Leaderboard {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    private Integer wins = 0;
-    private Integer losses = 0;
-    private Integer kills = 0;
-    private Integer deaths = 0;
-    private Integer matchesPlayed = 0;
+    private Integer wins;
+    private Integer losses;
+    private Integer kills;
+    private Integer deaths;
+    private Integer matchesPlayed;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -35,4 +35,13 @@ public class Leaderboard {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public Leaderboard(User user) {
+        this.wins = 0;
+        this.losses = 0;
+        this.kills = 0;
+        this.deaths = 0;
+        this.matchesPlayed = 0;
+        this.user = user;
+    }
 }

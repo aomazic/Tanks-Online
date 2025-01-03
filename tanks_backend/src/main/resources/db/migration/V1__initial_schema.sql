@@ -1,7 +1,7 @@
 ﻿CREATE SCHEMA IF NOT EXISTS game;
 
 CREATE TABLE IF NOT EXISTS game.user (
-                                         id bigint PRIMARY KEY,
+                                         id BIGSERIAL PRIMARY KEY,
                                          username varchar UNIQUE NOT NULL,
                                          password_hash varchar NOT NULL,
                                          email varchar UNIQUE NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS game.user (
 );
 
 CREATE TABLE IF NOT EXISTS game.leaderboard (
-                                                id      bigint PRIMARY KEY,
+                                                id      BIGSERIAL PRIMARY KEY,
                                                 user_id bigint UNIQUE,
                                         wins integer DEFAULT 0,
                                         losses integer DEFAULT 0,
@@ -25,16 +25,16 @@ CREATE TABLE IF NOT EXISTS game.leaderboard (
 );
 
 CREATE TABLE IF NOT EXISTS game.team (
-                                         id bigint PRIMARY KEY,
+                                         id BIGSERIAL PRIMARY KEY,
                                          name varchar UNIQUE NOT NULL,
                                          created_at timestamp,
                                          updated_at timestamp
 );
 
 CREATE TABLE IF NOT EXISTS game.game_session (
-                                                 id             bigint PRIMARY KEY,
-                                         name          varchar UNIQUE NOT NULL,
-                                         password      varchar,
+                                                 id             BIGSERIAL PRIMARY KEY,
+                                                 name           varchar UNIQUE NOT NULL,
+                                                 password       varchar,
                                          status varchar,
                                                  winner_team_id bigint,
                                          start_time timestamp,
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS game.game_session (
 );
 
 CREATE TABLE IF NOT EXISTS game.game_session_player (
-                                                        id              bigint PRIMARY KEY,
+                                                        id              BIGSERIAL PRIMARY KEY,
                                                         player_id       bigint,
                                                         game_session_id bigint,
                                                         team_id         bigint,
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS game.game_session_player (
 );
 
 CREATE TABLE IF NOT EXISTS game.game_events (
-                                                id              bigint PRIMARY KEY,
+                                                id              BIGSERIAL PRIMARY KEY,
                                                 game_session_id bigint,
                                         event_type varchar,
                                         event_time timestamp,
@@ -84,4 +84,5 @@ ALTER TABLE game.game_session_player ADD FOREIGN KEY (team_id) REFERENCES game.t
 
 ALTER TABLE game.game_events ADD FOREIGN KEY (game_session_id) REFERENCES game.game_session (id);
 
-ALTER TABLE game.user ADD FOREIGN KEY (id) REFERENCES game.leaderboard (user_id);
+ALTER TABLE game.leaderboard
+    ADD FOREIGN KEY (user_id) REFERENCES game.user (id);
