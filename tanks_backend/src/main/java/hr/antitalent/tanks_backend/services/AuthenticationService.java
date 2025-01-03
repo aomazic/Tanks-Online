@@ -35,11 +35,4 @@ public class AuthenticationService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         return jwtService.generateToken(user);
     }
-
-    public String deleteUser(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        userRepository.delete(user);
-        return "User deleted";
-    }
 }

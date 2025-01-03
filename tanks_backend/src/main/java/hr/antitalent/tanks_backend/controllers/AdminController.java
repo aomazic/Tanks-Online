@@ -1,6 +1,6 @@
 package hr.antitalent.tanks_backend.controllers;
 
-import hr.antitalent.tanks_backend.services.AuthenticationService;
+import hr.antitalent.tanks_backend.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminController {
-    private final AuthenticationService authenticationService;
+    private final UserService userService;
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(@RequestParam String username) {
-        return ResponseEntity.ok(authenticationService.deleteUser(username));
+        return ResponseEntity.ok(userService.deleteUser(username));
     }
 }
