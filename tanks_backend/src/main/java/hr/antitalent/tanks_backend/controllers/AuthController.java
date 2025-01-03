@@ -21,9 +21,4 @@ public class AuthController {
     public ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
         return ResponseEntity.ok(authenticationService.authenticate(username, password));
     }
-
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> delete(@RequestParam String username) {
-        return ResponseEntity.ok(authenticationService.deleteUser(username));
-    }
 }

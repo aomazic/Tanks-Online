@@ -1,5 +1,6 @@
 package hr.antitalent.tanks_backend.configurations;
 
+import hr.antitalent.tanks_backend.enums.UserRole;
 import hr.antitalent.tanks_backend.filters.JwtAuthenticationFilter;
 import hr.antitalent.tanks_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +35,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasAuthority(UserRole.ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(AbstractHttpConfigurer::disable)
                 .build();
     }
 
