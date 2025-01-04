@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: tanks_backend
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/game_db}
+    username: ${DATABASE_USERNAME:admin}
+    password: ${DATABASE_PASSWORD:password}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 1
+    locations: classpath:db/migration
+    validate-on-migrate: true
+
+security:
+  jwt:
+    secret-key: ${JWT_SECRET:b3764936aecc71b76d6e8ed6fe8f23521c7e8a607ee6efba6c5d4863548d92de}
+    expiration-time: 86400000
