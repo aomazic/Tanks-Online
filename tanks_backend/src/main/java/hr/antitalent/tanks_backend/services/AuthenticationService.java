@@ -1,5 +1,7 @@
 package hr.antitalent.tanks_backend.services;
 
+import hr.antitalent.tanks_backend.enums.UserRole;
+import hr.antitalent.tanks_backend.enums.UserStatus;
 import hr.antitalent.tanks_backend.models.User;
 import hr.antitalent.tanks_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +38,19 @@ public class AuthenticationService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         return jwtService.generateToken(user);
+    }
+
+    public String guestRegister() {
+        String guestUsername = String.format("guest_%s", UUID.randomUUID().toString().substring(0, 8));
+        User guestUser = User.builder()
+                .username(guestUsername)
+                .email(String.format("%s@guest.com", guestUsername))
+                .passwordHash(passwordEncoder.encode(UUID.randomUUID().toString()))
+                .role(UserRole.GUEST)
+                .status(UserStatus.ACTIVE)
+                .build();
+
+        userRepository.save(guestUser);
+        return jwtService.generateToken(guestUser);
     }
 }

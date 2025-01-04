@@ -21,4 +21,9 @@ public class AuthController {
     public ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
         return ResponseEntity.ok(authenticationService.authenticate(username, password));
     }
+
+    @PostMapping("/guest-register")
+    public ResponseEntity<String> guestLogin() {
+        return ResponseEntity.ok(authenticationService.guestRegister());
+    }
 }
