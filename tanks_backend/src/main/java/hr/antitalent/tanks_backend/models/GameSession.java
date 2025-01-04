@@ -1,9 +1,11 @@
 package hr.antitalent.tanks_backend.models;
 
 import hr.antitalent.tanks_backend.enums.GameSessionStatus;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -33,12 +35,14 @@ public class GameSession {
     private LocalDateTime endTime;
 
     @ManyToOne
-    @JoinColumn(name = "winner_team_id", referencedColumnName = "id")
-    private Team winnerTeam;
+    @JoinColumn(name = "winning_team_id", referencedColumnName = "id")
+    private Team winningTeam;
 
+    @Type(JsonBinaryType.class)
     @Column(columnDefinition = "jsonb")
     private String gameSettings;
 
+    @Type(JsonBinaryType.class)
     @Column(columnDefinition = "jsonb")
     private String summary;
 

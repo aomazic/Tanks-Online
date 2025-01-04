@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS game.game_session (
                                                  name           varchar UNIQUE NOT NULL,
                                                  password       varchar,
                                          status varchar,
-                                                 winner_team_id bigint,
+                                                 winning_team_id bigint,
                                          start_time timestamp,
                                          end_time timestamp,
                                          game_settings jsonb,
@@ -74,7 +74,8 @@ COMMENT ON COLUMN game.game_events.event_type IS 'e.g., GAME_START, PLAYER_HIT';
 
 COMMENT ON COLUMN game.game_events.summary IS 'Event details';
 
-ALTER TABLE game.game_session ADD FOREIGN KEY (winner_team_id) REFERENCES game.team (id);
+ALTER TABLE game.game_session
+    ADD FOREIGN KEY (winning_team_id) REFERENCES game.team (id);
 
 ALTER TABLE game.game_session_player ADD FOREIGN KEY (game_session_id) REFERENCES game.game_session (id);
 
