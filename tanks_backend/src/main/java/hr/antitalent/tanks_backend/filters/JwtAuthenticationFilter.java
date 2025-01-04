@@ -1,7 +1,6 @@
 package hr.antitalent.tanks_backend.filters;
 
 import hr.antitalent.tanks_backend.services.JwtService;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,10 +61,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
-        } catch (JwtException jwtException) {
-            logger.error("JWT authentication error", jwtException);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Unauthorized");
         } catch (Exception exception) {
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }
