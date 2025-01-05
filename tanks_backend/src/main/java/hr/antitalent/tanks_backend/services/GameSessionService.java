@@ -4,13 +4,10 @@ import hr.antitalent.tanks_backend.dto.GameSessionCreateDTO;
 import hr.antitalent.tanks_backend.dto.GameSessionUpdateDTO;
 import hr.antitalent.tanks_backend.enums.GameSessionStatus;
 import hr.antitalent.tanks_backend.models.GameSession;
-import hr.antitalent.tanks_backend.models.Team;
 import hr.antitalent.tanks_backend.repositories.GameSessionRepository;
-import hr.antitalent.tanks_backend.repositories.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +25,6 @@ public class GameSessionService {
 
     private static final Logger logger = LoggerFactory.getLogger(GameSessionService.class);
     private final GameSessionRepository gameSessionRepository;
-    private final TeamRepository teamRepository;
-    private final CacheManager fifteenMinutesCacheManager;
 
     @Transactional
     public GameSession createGameSession(GameSessionCreateDTO dto) {
@@ -63,19 +58,15 @@ public class GameSessionService {
 
         gameSession.setStatus(GameSessionStatus.FINISHED);
         gameSession.setEndTime(LocalDateTime.now());
-
-        if (dto.winningTeamId() != null) {
-            Team winningTeam = teamRepository.findById(dto.winningTeamId())
-                    .orElseThrow(() -> new IllegalArgumentException("Winner team not found"));
-            gameSession.setWinningTeam(winningTeam);
-        }
+        gameSession.setWinningTeam(dto.winningTeam());
+        
 
         if (dto.summary() != null && !dto.summary().isBlank()) {
             gameSession.setSummary(dto.summary());
         }
 
-        logger.info("Ending game session with ID: {}. Winning Team ID: {}, Summary: {}",
-                gameSessionId, dto.winningTeamId(), dto.summary());
+        logger.info("Ending game session with ID: {}. Winning Team: {}, Summary: {}",
+                gameSessionId, dto.winningTeam(), dto.summary());
 
         return gameSessionRepository.save(gameSession);
     }
@@ -110,4 +101,5 @@ public class GameSessionService {
         logger.info("Deleting game session with id: {}", gameSessionId);
         gameSessionRepository.deleteById(gameSessionId);
     }
+
 }

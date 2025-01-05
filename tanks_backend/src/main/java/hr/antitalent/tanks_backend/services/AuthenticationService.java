@@ -49,7 +49,7 @@ public class AuthenticationService {
                 .email(String.format("%s@guest.com", guestUsername))
                 .passwordHash(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .role(UserRole.GUEST)
-                .status(UserStatus.ACTIVE)
+                .status(UserStatus.ONLINE)
                 .build();
 
         userRepository.save(guestUser);

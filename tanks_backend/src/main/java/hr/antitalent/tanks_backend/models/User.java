@@ -1,5 +1,6 @@
 package hr.antitalent.tanks_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import hr.antitalent.tanks_backend.enums.UserRole;
 import hr.antitalent.tanks_backend.enums.UserStatus;
 import jakarta.persistence.*;
@@ -40,7 +41,7 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserStatus status = UserStatus.ACTIVE;
+    private UserStatus status = UserStatus.ONLINE;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -52,6 +53,7 @@ public class User implements UserDetails {
     private LocalDateTime lastLogin;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private Leaderboard leaderboard;
 
     @Override
@@ -81,7 +83,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return status.equals(UserStatus.ACTIVE);
+        return status.equals(UserStatus.ONLINE);
     }
 
     @PostPersist

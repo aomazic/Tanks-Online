@@ -1,5 +1,6 @@
 package hr.antitalent.tanks_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import hr.antitalent.tanks_backend.enums.GameSessionStatus;
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
@@ -34,9 +35,8 @@ public class GameSession {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    @ManyToOne
-    @JoinColumn(name = "winning_team_id", referencedColumnName = "id")
-    private Team winningTeam;
+
+    private String winningTeam;
 
     @Type(JsonBinaryType.class)
     @Column(columnDefinition = "jsonb")
@@ -54,8 +54,10 @@ public class GameSession {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "gameSession", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<GameSessionPlayer> players;
 
     @OneToMany(mappedBy = "gameSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<GameEvent> events;
 }

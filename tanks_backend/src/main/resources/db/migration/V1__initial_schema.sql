@@ -24,19 +24,12 @@ CREATE TABLE IF NOT EXISTS game.leaderboard (
                                         updated_at timestamp
 );
 
-CREATE TABLE IF NOT EXISTS game.team (
-                                         id BIGSERIAL PRIMARY KEY,
-                                         name varchar UNIQUE NOT NULL,
-                                         created_at timestamp,
-                                         updated_at timestamp
-);
-
 CREATE TABLE IF NOT EXISTS game.game_session (
                                                  id             BIGSERIAL PRIMARY KEY,
                                                  name           varchar UNIQUE NOT NULL,
                                                  password       varchar,
                                          status varchar,
-                                                 winning_team_id bigint,
+                                                 winning_team varchar,
                                          start_time timestamp,
                                          end_time timestamp,
                                          game_settings jsonb,
@@ -49,7 +42,7 @@ CREATE TABLE IF NOT EXISTS game.game_session_player (
                                                         id              BIGSERIAL PRIMARY KEY,
                                                         player_id       bigint,
                                                         game_session_id bigint,
-                                                        team_id         bigint,
+                                                        team varchar,
                                         kills integer DEFAULT 0,
                                         deaths integer DEFAULT 0,
                                         joined_at timestamp,
@@ -74,14 +67,11 @@ COMMENT ON COLUMN game.game_events.event_type IS 'e.g., GAME_START, PLAYER_HIT';
 
 COMMENT ON COLUMN game.game_events.summary IS 'Event details';
 
-ALTER TABLE game.game_session
-    ADD FOREIGN KEY (winning_team_id) REFERENCES game.team (id);
 
 ALTER TABLE game.game_session_player ADD FOREIGN KEY (game_session_id) REFERENCES game.game_session (id);
 
 ALTER TABLE game.game_session_player ADD FOREIGN KEY (player_id) REFERENCES game.user (id);
 
-ALTER TABLE game.game_session_player ADD FOREIGN KEY (team_id) REFERENCES game.team (id);
 
 ALTER TABLE game.game_events ADD FOREIGN KEY (game_session_id) REFERENCES game.game_session (id);
 

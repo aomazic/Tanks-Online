@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     public static final String DESCRIPTION = "description";
+    public static final String USER_NOT_FOUND = "User not found";
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleSecurityException(Exception exception) {
@@ -49,7 +50,7 @@ public class GlobalExceptionHandler {
 
         if (exception instanceof UsernameNotFoundException) {
             errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
-            errorDetail.setProperty(DESCRIPTION, "User not found");
+            errorDetail.setProperty(DESCRIPTION, USER_NOT_FOUND);
         }
 
         if (errorDetail == null) {

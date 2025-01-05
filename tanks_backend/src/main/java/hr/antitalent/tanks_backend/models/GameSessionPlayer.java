@@ -1,5 +1,6 @@
 package hr.antitalent.tanks_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -20,15 +21,15 @@ public class GameSessionPlayer {
 
     @ManyToOne
     @JoinColumn(name = "player_id", referencedColumnName = "id")
+    @JsonBackReference
     private User player;
 
     @ManyToOne
     @JoinColumn(name = "game_session_id", referencedColumnName = "id")
+    @JsonBackReference
     private GameSession gameSession;
 
-    @ManyToOne
-    @JoinColumn(name = "team_id", referencedColumnName = "id")
-    private Team team;
+    private String team;
 
     private Integer kills = 0;
     private Integer deaths = 0;

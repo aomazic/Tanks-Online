@@ -15,7 +15,7 @@ public class AdminController {
     private final UserService userService;
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@RequestParam String username) {
-        return ResponseEntity.ok(userService.deleteUser(username));
+    public ResponseEntity<String> deleteUser(@RequestParam Long userId) {
+        return ResponseEntity.ok(userService.deleteUser(userId));
     }
 }

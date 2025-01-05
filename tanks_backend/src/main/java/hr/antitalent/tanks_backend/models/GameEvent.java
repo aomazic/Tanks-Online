@@ -1,5 +1,6 @@
 package hr.antitalent.tanks_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import hr.antitalent.tanks_backend.enums.GameEventType;
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
@@ -23,6 +24,7 @@ public class GameEvent {
 
     @ManyToOne
     @JoinColumn(name = "game_session_id", referencedColumnName = "id")
+    @JsonBackReference
     private GameSession gameSession;
 
     @Enumerated(EnumType.STRING)
