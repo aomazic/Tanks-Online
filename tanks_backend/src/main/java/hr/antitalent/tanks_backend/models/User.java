@@ -53,8 +53,7 @@ public class User implements UserDetails {
     private LocalDateTime lastLogin;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Leaderboard leaderboard;
+    private UserStats userStats;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -88,8 +87,8 @@ public class User implements UserDetails {
 
     @PostPersist
     private void createLeaderboardEntry() {
-        if (this.leaderboard == null) {
-            this.leaderboard = new Leaderboard(this);
+        if (this.userStats == null) {
+            this.userStats = new UserStats(this);
         }
     }
 }

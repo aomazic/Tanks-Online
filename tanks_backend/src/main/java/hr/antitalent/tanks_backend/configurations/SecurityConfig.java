@@ -47,7 +47,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         var corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(List.of("http://localhost:8080"));
+        corsConfig.setAllowedOrigins(List.of("*")); // For development purposes only
         corsConfig.setAllowedMethods(List.of("GET", "POST"));
         corsConfig.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 

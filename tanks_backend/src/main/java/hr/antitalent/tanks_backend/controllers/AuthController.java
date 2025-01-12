@@ -15,12 +15,18 @@ public class AuthController {
     /**
      * Registers a new user.
      *
-     * @param user The user details for registration.
+     * @param username The username of the user.
+     * @param password The password of the user.
+     * @param email The email of the user.                     
      * @return ResponseEntity with registration status message.
      */
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
-        String registrationResult = authenticationService.register(user);
+    public ResponseEntity<String> register(
+            @RequestParam String username,
+            @RequestParam String password,
+            @RequestParam String email
+    ) {
+        String registrationResult = authenticationService.register(username, password, email);
         return ResponseEntity.ok(registrationResult);
     }
 
@@ -48,5 +54,16 @@ public class AuthController {
     public ResponseEntity<String> guestRegister() {
         String guestToken = authenticationService.guestRegister();
         return ResponseEntity.ok(guestToken);
+    }
+
+    /**
+     * Checks if username is already taken.
+     *
+     * @param username The username to check.
+     * @return ResponseEntity with username availability status message.
+     */
+    @GetMapping("/check-username/{username}")
+    public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
+        return ResponseEntity.ok(authenticationService.checkUsername(username));
     }
 }

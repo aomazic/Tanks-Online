@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS game.user (
                                          id BIGSERIAL PRIMARY KEY,
                                          username varchar UNIQUE NOT NULL,
                                          password_hash varchar NOT NULL,
-                                         email varchar UNIQUE NOT NULL,
+                                         email varchar NOT NULL,
                                          role varchar DEFAULT 'PLAYER',
                                          status varchar DEFAULT 'ACTIVE',
                                          created_at timestamp,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS game.user (
                                          last_login timestamp
 );
 
-CREATE TABLE IF NOT EXISTS game.leaderboard (
+CREATE TABLE IF NOT EXISTS game.user_stats (
                                                 id      BIGSERIAL PRIMARY KEY,
                                                 user_id bigint UNIQUE,
                                         wins integer DEFAULT 0,
@@ -75,5 +75,5 @@ ALTER TABLE game.game_session_player ADD FOREIGN KEY (player_id) REFERENCES game
 
 ALTER TABLE game.game_events ADD FOREIGN KEY (game_session_id) REFERENCES game.game_session (id);
 
-ALTER TABLE game.leaderboard
+ALTER TABLE game.user_stats
     ADD FOREIGN KEY (user_id) REFERENCES game.user (id);

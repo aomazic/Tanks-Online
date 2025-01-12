@@ -23,9 +23,15 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public String register(User user) {
+    public String register(String username, String password, String email) {
         try {
-            user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
+            User user = User.builder()
+                    .username(username)
+                    .passwordHash(passwordEncoder.encode(password))
+                    .email(email)
+                    .role(UserRole.PLAYER)
+                    .status(UserStatus.ONLINE)
+                    .build();
             userRepository.save(user);
             return jwtService.generateToken(user);
         } catch (DataIntegrityViolationException e) {
@@ -54,5 +60,9 @@ public class AuthenticationService {
 
         userRepository.save(guestUser);
         return jwtService.generateToken(guestUser);
+    }
+    
+    public boolean checkUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 }

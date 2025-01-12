@@ -20,16 +20,16 @@ public class UserController {
     /**
      * Update status of a user.
      *
-     * @param userId    User ID.
+     * @param userName  Username.
      * @param newStatus New status.
      * @return ResponseEntity with updated User.
      */
-    @PutMapping("/{userId}/status")
+    @PutMapping("/{userName}/status")
     public ResponseEntity<User> updateUserStatus(
-            @PathVariable Long userId,
+            @PathVariable String userName,
             @RequestParam UserStatus newStatus) {
         try {
-            User updatedUser = userService.updateUserStatus(userId, newStatus);
+            User updatedUser = userService.updateUserStatus(userName, newStatus);
             return ResponseEntity.ok(updatedUser);
         } catch (IllegalArgumentException e) {
             logger.error("Error updating user status: {}", e.getMessage());

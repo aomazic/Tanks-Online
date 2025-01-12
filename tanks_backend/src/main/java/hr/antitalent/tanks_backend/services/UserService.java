@@ -27,8 +27,8 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserStatus(Long userId, UserStatus newStatus) {
-        User user = userRepository.findById(userId)
+    public User updateUserStatus(String userName, UserStatus newStatus) {
+        User user = userRepository.findByUsername(userName)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         logger.info("Updating user {} status to {}", user.getUsername(), newStatus);
