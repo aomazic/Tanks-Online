@@ -18,27 +18,27 @@ public static class TerminalTexts
 
         { ConsoleState.LoginPassword, @"
 ===================================
-      Enter Password to Login
+     Enter Password to Login
 ===================================" },
 
         { ConsoleState.LoginUsername, @"
 ===================================
-      Enter Username to Login
+     Enter Username to Login
 ===================================" },
 
         { ConsoleState.RegisterEmail, @"
 ===================================
-     Enter Email to Register
+    Enter Email to Register
 ===================================" },
 
         { ConsoleState.RegisterPassword, @"
 ===================================
-     Enter Password to Register
+    Enter Password to Register
 ===================================" },
 
         { ConsoleState.RegisterUserName, @"
 ===================================
-     Enter Username to Register
+    Enter Username to Register
 ===================================" },
 
         { ConsoleState.Guest, @"

@@ -24,7 +24,7 @@ public class UserController {
      * @param newStatus New status.
      * @return ResponseEntity with updated User.
      */
-    @PutMapping("/{userName}/status")
+    @PostMapping("/{userName}/status")
     public ResponseEntity<User> updateUserStatus(
             @PathVariable String userName,
             @RequestParam UserStatus newStatus) {

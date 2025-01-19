@@ -87,21 +87,22 @@ public class WebClient : MonoBehaviour
         }
     }
     
-    public IEnumerator updateUserStatus(string username, UserStatus status, System.Action<bool, string> callback)
+    public IEnumerator UpdateUserStatus(string username, UserStatus status, System.Action<bool, string> callback)
     {
         var form = new WWWForm();
-        form.AddField("status", status.ToString());
+        form.AddField("newStatus", status.ToString());
 
-        using var request = UnityWebRequest.Post($"/{username}/status", form);
-        
+        using var request = UnityWebRequest.Post($"{BaseUrl}/user/{username}/status", form);
+
         if (!TokenManager.HasToken())
         {
             callback(false, "No token available. Please log in.");
             yield break;
         }
-        
+
         request.SetRequestHeader("Authorization", $"Bearer {TokenManager.GetToken()}");
-        
+        request.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
@@ -113,5 +114,4 @@ public class WebClient : MonoBehaviour
             callback(false, request.error);
         }
     }
-
 }

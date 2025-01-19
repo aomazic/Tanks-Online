@@ -122,6 +122,7 @@ public class ConsoleController : MonoBehaviour
         {
             case "back":
                 currentState = ConsoleState.MainMenu;
+                terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 TypeText("Choose Option to Enter System", infoTextRef);
                 break;
             case "exit":
@@ -133,6 +134,9 @@ public class ConsoleController : MonoBehaviour
                 {
                     if (success)
                     {
+                        TokenManager.SaveToken(response);
+                        UserInfoManager.SaveUserName(tempUsername);
+                        currentState = ConsoleState.Entering;
                         TypeText("Login successful!", infoTextRef);
                         EnterGame();
                     }
@@ -220,6 +224,9 @@ public class ConsoleController : MonoBehaviour
                 {
                     if (success)
                     {
+                        TokenManager.SaveToken(response);
+                        UserInfoManager.SaveUserName(tempUsername);
+                        currentState = ConsoleState.Entering;
                         TypeText("Registration successful!", infoTextRef);
                         EnterGame();
                     }
@@ -258,12 +265,11 @@ public class ConsoleController : MonoBehaviour
     
     private void EnterGame()
     {
-        StopCoroutine(webClient.updateUserStatus(tempUsername, UserStatus.ONLINE, (success, response) =>
+        StartCoroutine(webClient.UpdateUserStatus(tempUsername, UserStatus.ONLINE, (success, response) =>
         {
             if (success)
             {
-                TypeText("Entering the game...", infoTextRef);
-                // Load the actual main menu scene
+                StartCoroutine(InitiateEnteringGame("Entering the game...", infoTextRef, SceneController.LoadInitializing));
             }
             else
             {
@@ -272,6 +278,15 @@ public class ConsoleController : MonoBehaviour
         }));
     }
     
+    private IEnumerator InitiateEnteringGame(string text, TMP_Text textComponent, System.Action loadSceneAction)
+    {
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+        }
+        yield return TypeTextCoroutine(text, textComponent);
+        loadSceneAction();
+    }
     
     private void TypeText(string text, TMP_Text textComponent, string nextText = null)
     {
@@ -300,6 +315,14 @@ public class ConsoleController : MonoBehaviour
     private void ExitCase()
     {
         TypeText("Exiting... Goodbye Commander!", infoTextRef);
+        StopCoroutine(webClient.UpdateUserStatus(tempUsername, UserStatus.OFFLINE, (success, response) =>
+        {
+            if (!success)
+            {
+                Debug.LogError(response);
+            }
+        }));
+        
         Application.Quit();
     }
 }
