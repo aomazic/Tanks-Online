@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public interface IDamagable
@@ -8,4 +9,6 @@ public interface IDamagable
     float Health { get; set; }
     void TakeDamage(float damage);
     void Die();
+    event Action<IDamagable>  OnDamaged;
+    event Action<IDamagable> OnDestroyed;
 }

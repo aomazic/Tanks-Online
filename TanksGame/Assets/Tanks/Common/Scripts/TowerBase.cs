@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -63,6 +64,8 @@ public abstract class TowerBase : MonoBehaviour, ITower
     public Collider2D Collider => GetComponent<Collider2D>();
     public Rigidbody2D Rigidbody => GetComponent<Rigidbody2D>();
     public ITowerEffects TowerEffects  => GetComponentInChildren<ITowerEffects>();
+    public event Action<IDamagable> OnDestroyed;
+    public event Action<IDamagable> OnDamaged; 
     
     public IEnemy Target { get; set; }
     public HashSet<IEnemy> enemiesInMaxRange { get; set; } = new HashSet<IEnemy>();
@@ -116,7 +119,7 @@ public abstract class TowerBase : MonoBehaviour, ITower
         // Subscribe to the new target's OnDeath event
         if (Target != null)
         {
-            Target.OnDeath += HandleTargetDeath;
+            Target.OnDestroyed += HandleTargetDeath;
         }
     }
     
@@ -151,14 +154,14 @@ public abstract class TowerBase : MonoBehaviour, ITower
         return false;
     }
     
-    public virtual void HandleTargetDeath(IEnemy enemy)
+    public virtual void HandleTargetDeath(IDamagable enemy)
     {
         if (Target != enemy)
         {
             return;
         }
         // Unsubscribe from the dead target's OnDeath event
-        Target.OnDeath -= HandleTargetDeath;
+        Target.OnDestroyed -= HandleTargetDeath;
         Target = null;
     }
 

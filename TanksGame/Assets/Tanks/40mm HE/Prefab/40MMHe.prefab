@@ -49,12 +49,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: deec516a2495f7746bddda2ddf088d9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 50
-  explosionRadius: 5
-  explosionForce: 1
-  penetrationRating: 0
-  maxRange: 50
-  projectilePrefab: {fileID: 0}
+  stats: {fileID: 11400000, guid: 0fb0067fdc0f71e4ab2175e85d04fe11, type: 2}
+  projectilePrefab: {fileID: 2702618385891188024}
+  burstParticleEmitter: {fileID: 5009056125902849848}
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!50 &3073532512823701611
 Rigidbody2D:
   serializedVersion: 5
@@ -415,6 +415,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33f0016052aef364d9daa010f3f486e9, type: 3}
+--- !u!198 &5009056125902849848 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7672471521298312371, guid: 33f0016052aef364d9daa010f3f486e9,
+    type: 3}
+  m_PrefabInstance: {fileID: 3456976928503131019}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7714747168374120964 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4965763532659722639, guid: 33f0016052aef364d9daa010f3f486e9,

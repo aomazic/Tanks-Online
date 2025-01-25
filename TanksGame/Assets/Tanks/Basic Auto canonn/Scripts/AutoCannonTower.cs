@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class AutoCannon : TowerBase
+public class AutoCannonTower : TowerBase
 {
     [Header("Projectile references")]
     [SerializeField]

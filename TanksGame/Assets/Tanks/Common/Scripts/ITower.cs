@@ -14,7 +14,7 @@ public interface ITower: IDamagable
     void setRanges();
     void NewEnemyDetected(IEnemy enemy);
     void EnemyOutOfRange(IEnemy enemy);
-    void HandleTargetDeath(IEnemy enemy);
+    void HandleTargetDeath(IDamagable enemy);
     void FindNewTarget();
     void RotateTurretTowardsTarget();
     bool IsTurretPointedAtTarget();

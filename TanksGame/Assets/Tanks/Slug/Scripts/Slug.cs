@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Slug : MonoBehaviour, IEnemy
@@ -12,9 +13,8 @@ public class Slug : MonoBehaviour, IEnemy
         set => health = value;
     }
     
-    public IDamagable DamagableComponent => this;
-    
-    public event System.Action<IEnemy> OnDeath;
+    public event Action<IDamagable> OnDestroyed;
+    public event Action<IDamagable> OnDamaged; 
     public Transform Transform => transform;
     public Collider2D Collider => GetComponent<Collider2D>();
     public Rigidbody2D Rigidbody => GetComponent<Rigidbody2D>();
@@ -22,6 +22,7 @@ public class Slug : MonoBehaviour, IEnemy
     
     public void TakeDamage(float amount)
     {
+        OnDamaged?.Invoke(this);
         Health -= amount;
         if (Health <= 0)
         {
@@ -31,7 +32,7 @@ public class Slug : MonoBehaviour, IEnemy
     
     public void Die()
     {
-        OnDeath?.Invoke(this);
+        OnDestroyed?.Invoke(this);
         Destroy(gameObject);
     }
 }

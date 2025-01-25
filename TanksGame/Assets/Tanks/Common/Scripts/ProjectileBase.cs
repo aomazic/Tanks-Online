@@ -1,75 +1,45 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class ProjectileBase : MonoBehaviour, IProjectile
 {
-    [Header("Projectile Attributes")]
-    [SerializeField]
-    private float damage;
-    [SerializeField]
-    private float explosionRadius;
-    [SerializeField]
-    private float explosionForce;
-    [SerializeField]
-    private float penetrationRating;
-    [SerializeField]
-    private float maxRange;
+    [Header("Projectile Settings")]
+    [SerializeField] private ProjectileStats stats;
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private ParticleSystem burstParticleEmitter;
+    [SerializeField] private LayerMask collisionMask;
 
-    [Header("References")]
-    [SerializeField]
-    private GameObject projectilePrefab;
-
-    
-    private ParticleSystem burstParticleEmitter;
+    private Rigidbody2D rb;
     private Vector2 startPosition;
-    private const float CheckInterval = 0.1f; 
-    private const float ParticleSpeed = 100;
-    
+    private float currentPenetration;
+    private bool isQuitting;
 
-    public float Damage
+    public ProjectileStats Stats => stats;
+    public GameObject ProjectilePrefab => projectilePrefab;
+
+    private void Awake()
     {
-        get => damage;
-        set => damage = value;  
-    }
-    public float ExplosionRadius
-    {
-        get => explosionRadius;
-        set => explosionRadius = value;
-    }
-    public float ExplosionForce
-    {
-        get => explosionForce;
-        set => explosionForce = value;
-    }
-    public float PenetrationRating
-    {
-        get => penetrationRating;
-        set => penetrationRating = value;
-    }
-    public float MaxRange
-    {
-        get => maxRange;
-        set => maxRange = value;
-    }
-    public GameObject ProjectilePrefab
-    {
-        get => projectilePrefab;
-        set => projectilePrefab = value;
+        rb = GetComponent<Rigidbody2D>();
+        currentPenetration = stats.PenetrationRating;
     }
 
     private void Start()
     {
-        burstParticleEmitter = GetComponentInChildren<ParticleSystem>();
         startPosition = transform.position;
         StartCoroutine(CheckMaxRangeCoroutine());
     }
 
+    private void OnApplicationQuit() => isQuitting = true;
+
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (penetrationRating > 0)
+        if (((1 << other.gameObject.layer) & collisionMask) == 0) return;
+
+        if (currentPenetration > 0)
         {
             Penetrate();
+            currentPenetration--;
         }
         else
         {
@@ -79,78 +49,74 @@ public class ProjectileBase : MonoBehaviour, IProjectile
 
     private IEnumerator CheckMaxRangeCoroutine()
     {
-        while (true)
+        var wait = new WaitForSeconds(0.1f);
+        while (enabled)
         {
-            yield return new WaitForSeconds(CheckInterval);
-            CheckMaxRange();
+            if (Vector2.Distance(startPosition, transform.position) > stats.MaxRange)
+            {
+                Explode();
+                yield break;
+            }
+            yield return wait;
         }
     }
-
-    private void CheckMaxRange()
-    {
-        if (Vector2.Distance(startPosition, transform.position) > maxRange)
-        {
-            Explode();
-        }
-    }
-    
 
     public void Explode()
     {
-        var colliders = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
+        if (isQuitting) return;
+
+        var position = transform.position;
+        var colliders = Physics2D.OverlapCircleAll(position, stats.ExplosionRadius);
+
         foreach (var col in colliders)
         {
-            var target = col.GetComponent<IDamagable>();
-            if (target != null)
-            {
-                ApplyDamageAndForceToEnemy(target);
-            }
-            else
-            {
-                ApplyExplosionForce(col.attachedRigidbody, col);
-            }
+            if (col.gameObject == gameObject) continue;
+
+            ApplyDamage(col.transform.position);
+            ApplyForce(col);
         }
-        
-        if (burstParticleEmitter)
-        {
-            burstParticleEmitter.transform.SetParent(null);
-            var mainModule = burstParticleEmitter.main; 
-            mainModule.startSpeed = ParticleSpeed;
-            burstParticleEmitter.Play();
-        }
-        
+
+        PlayParticleEffect();
         DestroyProjectile();
     }
 
-    private void ApplyDamageAndForceToEnemy(IDamagable target)
+    private void ApplyDamage(Vector3 targetPosition)
     {
-        var distance = Vector2.Distance(transform.position, target.Transform.position);
-        var damageMultiplier = 1 - distance / explosionRadius;
-        var finalDamage = damage * damageMultiplier;
+        var damagable = GetComponentInParent<IDamagable>();
+        if (damagable == null) return;
 
-        target.TakeDamage(finalDamage);
-        var rb = target.Rigidbody;
-        ApplyExplosionForce(rb, target.Collider);
+        var distance = Vector2.Distance(transform.position, targetPosition);
+        var damageMultiplier = Mathf.Clamp01(1 - distance / stats.ExplosionRadius);
+        damagable.TakeDamage(stats.Damage * damageMultiplier);
     }
 
-    private void ApplyExplosionForce(Rigidbody2D rb, Collider2D col)
+    private void ApplyForce(Collider2D col)
     {
-        if (rb)
-        {
-            Vector2 direction = col.transform.position - transform.position;
-            rb.AddForce(direction.normalized * explosionForce, ForceMode2D.Impulse);
-        }
+        if (!col.attachedRigidbody) return;
+
+        var direction = (Vector2)(col.transform.position - transform.position);
+        col.attachedRigidbody.AddForce(direction.normalized * stats.ExplosionForce, ForceMode2D.Impulse);
+    }
+
+    private void PlayParticleEffect()
+    {
+        if (!burstParticleEmitter) return;
+
+        burstParticleEmitter.transform.SetParent(null);
+        burstParticleEmitter.Play();
+        Destroy(burstParticleEmitter.gameObject, burstParticleEmitter.main.duration);
     }
 
     public void Penetrate()
     {
-        // Implement penetration logic here
-        // For now, just call DestroyProjectile
-        DestroyProjectile();
+        // Add penetration logic here
+        // Example: Continue moving with reduced damage
+        // For now just continue without destroying
     }
 
     public void DestroyProjectile()
     {
+        if (isQuitting) return;
         Destroy(gameObject);
     }
 }
