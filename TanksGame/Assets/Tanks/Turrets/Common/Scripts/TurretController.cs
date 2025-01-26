@@ -7,29 +7,30 @@ public class TurretController : MonoBehaviour
     [Header("Configuration")]
     [SerializeField] private TurretConfig config;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private AudioSource rotationAudioSource;
-    [SerializeField] private AudioSource fireAudioSource;
     [SerializeField] private GameObject projectilePrefab;
+    
+    [Header("Input")]
+    [SerializeField] private PlayerTankInput tankInput;
     
     private Camera mainCamera;
     private float currentRotationSpeed;
     private bool isRotating;
     private bool canFire = true;
     private Vector2 aimDirection;
-    private AutoCannonEffects autoCannonEffects;
+    private AutoCannonEffects towerEffects;
     
     private Dictionary<int, (GameObject projectile, Rigidbody2D rb)> projectiles = new Dictionary<int, (GameObject, Rigidbody2D)>();
     
     private void Awake()
     {
         mainCamera = Camera.main;
-        rotationAudioSource.loop = true;
-        rotationAudioSource.clip = config.rotationSound;
+        tankInput.OnFire += HandleFireInput;
     }
 
     private void Start()
     {
-        autoCannonEffects = GetComponentInChildren<AutoCannonEffects>();
+        towerEffects = GetComponentInChildren<AutoCannonEffects>();
+        
         
         for (var i = 0; i < config.totalAmmo; i++)
         {
@@ -44,7 +45,6 @@ public class TurretController : MonoBehaviour
     {
         HandleAimInput();
         HandleRotation();
-        HandleFiringInput();
     }
 
     private void HandleAimInput()
@@ -68,46 +68,22 @@ public class TurretController : MonoBehaviour
 
         // Apply rotation
         transform.Rotate(Vector3.forward, currentRotationSpeed * Time.deltaTime);
-
-        // Update rotation audio
-        UpdateRotationAudio(Mathf.Abs(angleDifference));
-    }
-
-    private void UpdateRotationAudio(float angleDifference)
-    {
-        var shouldRotate = angleDifference > config.aimThreshold;
         
-        if(shouldRotate != isRotating)
-        {
-            isRotating = shouldRotate;
-            if(isRotating)
-            {
-                rotationAudioSource.Play();
-            }
-            else
-            {
-                rotationAudioSource.Stop();
-            }
-        }
-
-        if(isRotating)
-        {
-            var volume = Mathf.Clamp01(angleDifference / 45f) * config.maxRotationVolume;
-            var pitch = Mathf.Lerp(0.8f, 1.2f, currentRotationSpeed / config.rotationSpeed);
-            
-            rotationAudioSource.volume = volume;
-            rotationAudioSource.pitch = pitch;
-        }
+        var shouldRotate = angleDifference > config.aimThreshold;
+        // Update rotation audio
+        towerEffects.UpdateRotationAudio(Mathf.Abs(angleDifference), config.rotationSpeed, currentRotationSpeed, shouldRotate);
     }
+    
 
-    private void HandleFiringInput()
+    private void HandleFireInput()
     {
-        if(Input.GetMouseButton(0) && canFire)
+        if(canFire)
         {
             StartCoroutine(FireCooldown());
             FireProjectile();
         }
     }
+
 
     private (GameObject projectile, Rigidbody2D rb) GetNextProjectile()
     {
@@ -132,9 +108,8 @@ public class TurretController : MonoBehaviour
         Vector2 fireDirection = transform.up; 
         projectile.transform.rotation = Quaternion.LookRotation(Vector3.forward, fireDirection);
         rb.linearVelocity = fireDirection * config.projectileSpeed;
-        
-        fireAudioSource.PlayOneShot(config.fireSound);
-        autoCannonEffects.Fire();
+
+        towerEffects.Fire();
     }
 
     private IEnumerator FireCooldown()

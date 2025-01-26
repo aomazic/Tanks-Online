@@ -10,7 +10,6 @@ public interface ITower: IDamagable
     Transform FirePoint { get; set; }
     IEnemy Target { get; set; }
     HashSet<IEnemy> enemiesInMaxRange { get; set; }
-    ITowerEffects TowerEffects { get;}
     void setRanges();
     void NewEnemyDetected(IEnemy enemy);
     void EnemyOutOfRange(IEnemy enemy);

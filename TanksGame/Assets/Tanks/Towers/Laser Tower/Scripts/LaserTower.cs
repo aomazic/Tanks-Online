@@ -40,7 +40,6 @@ public class LaserTower : TowerBase
     {
         if (Target == null)
         {
-            laserEffects.StopRotation();
             FindNewTarget();
         }
         else

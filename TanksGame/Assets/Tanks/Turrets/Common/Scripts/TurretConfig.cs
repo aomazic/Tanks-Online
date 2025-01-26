@@ -14,10 +14,6 @@ public class TurretConfig : ScriptableObject
     public float projectileSpeed = 15f;
     public int totalAmmo = 10;
 
-    [Header("Audio")]
-    public AudioClip rotationSound;
-    public AudioClip fireSound;
-    [Range(0, 1)] public float maxRotationVolume = 0.6f;
     
     public float RotationSpeed
     {
@@ -53,20 +49,5 @@ public class TurretConfig : ScriptableObject
     {
         get => totalAmmo;
         set => totalAmmo = value;
-    }
-    public AudioClip RotationSound
-    {
-        get => rotationSound;
-        set => rotationSound = value;
-    }
-    public AudioClip FireSound
-    {
-        get => fireSound;
-        set => fireSound = value;
-    }
-    public float MaxRotationVolume
-    {
-        get => maxRotationVolume;
-        set => maxRotationVolume = value;
     }
 }

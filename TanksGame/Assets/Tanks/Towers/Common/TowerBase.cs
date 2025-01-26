@@ -63,7 +63,6 @@ public abstract class TowerBase : MonoBehaviour, ITower
     public Transform Transform => transform;
     public Collider2D Collider => GetComponent<Collider2D>();
     public Rigidbody2D Rigidbody => GetComponent<Rigidbody2D>();
-    public ITowerEffects TowerEffects  => GetComponentInChildren<ITowerEffects>();
     public event Action<IDamagable> OnDestroyed;
     public event Action<IDamagable> OnDamaged; 
     
