@@ -7,6 +7,7 @@ public class PlayerTankInput : MonoBehaviour, ITankInput
     public Vector2 MoveInput { get; private set; }
     public float RotateInput { get; private set; }
     public event System.Action OnFire;
+    public event System.Action OnFireCanceled;
 
     private void Awake()    
     {
@@ -14,6 +15,7 @@ public class PlayerTankInput : MonoBehaviour, ITankInput
         controls.Tank.Move.performed += ctx => MoveInput = ctx.ReadValue<Vector2>();
         controls.Tank.Rotate.performed += ctx => RotateInput = ctx.ReadValue<float>();
         controls.Tank.Fire.performed += _ => OnFire?.Invoke();
+        controls.Tank.Fire.canceled += _ => OnFireCanceled?.Invoke();
     }
 
     private void OnEnable() => controls.Enable();

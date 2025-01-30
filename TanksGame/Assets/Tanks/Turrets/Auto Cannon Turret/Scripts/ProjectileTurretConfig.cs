@@ -1,35 +1,14 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "TurretConfig", menuName = "Tank/TurretConfig")]
-public class TurretConfig : ScriptableObject
+[CreateAssetMenu(fileName = "ProjectileTurretConfig", menuName = "Weapons/Turrets/Projectile Turret Config")]
+public class ProjectileTurretConfig : ScriptableObject
 {
-    [Header("Rotation")]
-    public float rotationSpeed = 180f;
-    public float rotationAcceleration = 5f;
-    public float aimThreshold = 1f;
-
     [Header("Combat")]
     public float fireRate = 0.5f;
     public float projectileDamage = 20f;
     public float projectileSpeed = 15f;
     public int totalAmmo = 10;
-
     
-    public float RotationSpeed
-    {
-        get => rotationSpeed;
-        set => rotationSpeed = value;
-    }
-    public float RotationAcceleration
-    {
-        get => rotationAcceleration;
-        set => rotationAcceleration = value;
-    }
-    public float AimThreshold
-    {
-        get => aimThreshold;
-        set => aimThreshold = value;
-    }
     public float FireRate
     {
         get => fireRate;
