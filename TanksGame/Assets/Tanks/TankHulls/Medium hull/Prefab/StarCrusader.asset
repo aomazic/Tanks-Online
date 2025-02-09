@@ -17,9 +17,9 @@ MonoBehaviour:
   acceleration: 1
   deceleration: 8
   reverseSpeedMultiplier: 0.7
-  engineIdleClip: {fileID: 0}
-  engineRunningClip: {fileID: 0}
-  trackLoopClip: {fileID: 0}
+  engineIdleClip: {fileID: 8300000, guid: 2e387eff5fa191d4886026ceea66fbfb, type: 3}
+  engineRunningClip: {fileID: 8300000, guid: 7a19d5540bca6414395d89399c482e87, type: 3}
+  trackLoopClip: {fileID: 8300000, guid: e4ff47f36eacdf541bd4fe7c8b4321aa, type: 3}
   maxEngineVolume: 0.8
   maxHealth: 100
   armorRating: 1

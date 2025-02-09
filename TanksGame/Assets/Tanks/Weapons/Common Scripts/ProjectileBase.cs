@@ -1,5 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class ProjectileBase : MonoBehaviour, IProjectile
@@ -7,8 +10,20 @@ public class ProjectileBase : MonoBehaviour, IProjectile
     [Header("Projectile Settings")]
     [SerializeField] private ProjectileStats stats;
     [SerializeField] private GameObject projectilePrefab;
-    [SerializeField] private ParticleSystem burstParticleEmitter;
     [SerializeField] private LayerMask collisionMask;
+    
+    [Header("References")]
+    [SerializeField] private ParticleSystem burstParticleEmitter;
+    [SerializeField] private AudioSource explosionAudioSource;
+    
+    [FormerlySerializedAs("hitExplosionSounds")]
+    [FormerlySerializedAs("explosionSounds")]
+    [Header("Sound Effects")]
+    [SerializeField] private List<AudioClip> tankHitExplosionSounds;
+    [SerializeField] private List<AudioClip> explosionSounds;
+    
+    private bool isTankHit = false;
+    
 
     private Rigidbody2D rb;
     private Vector2 startPosition;
@@ -72,22 +87,27 @@ public class ProjectileBase : MonoBehaviour, IProjectile
         {
             if (col.gameObject == gameObject) continue;
 
-            ApplyDamage(col.transform.position);
+            ApplyDamage(col.transform.position, col.GetComponent<IDamagable>());
             ApplyForce(col);
         }
 
         PlayParticleEffect();
+        PlayExplosionSound();
         DestroyProjectile();
     }
 
-    private void ApplyDamage(Vector3 targetPosition)
+    private void ApplyDamage(Vector3 targetPosition, IDamagable damageable)
     {
-        var damagable = GetComponentInParent<IDamagable>();
-        if (damagable == null) return;
+        if (damageable == null) return;
+
+        if (damageable.Transform.CompareTag("Tank"))
+        {
+            isTankHit = true;
+        }
 
         var distance = Vector2.Distance(transform.position, targetPosition);
         var damageMultiplier = Mathf.Clamp01(1 - distance / stats.ExplosionRadius);
-        damagable.TakeDamage(stats.Damage * damageMultiplier);
+        damageable.TakeDamage(stats.Damage * damageMultiplier);
     }
 
     private void ApplyForce(Collider2D col)
@@ -114,6 +134,18 @@ public class ProjectileBase : MonoBehaviour, IProjectile
         // For now just continue without destroying
     }
 
+    private void PlayExplosionSound()
+    {
+        var soundsToPlay = isTankHit ? tankHitExplosionSounds : explosionSounds;
+        
+        if (soundsToPlay == null || soundsToPlay.Count == 0) return;
+        explosionAudioSource.transform.SetParent(null);
+        
+        var randomIndex = Random.Range(0, soundsToPlay.Count);
+        explosionAudioSource.PlayOneShot(soundsToPlay[randomIndex]);
+        Destroy(explosionAudioSource.gameObject, soundsToPlay[randomIndex].length);
+    }
+    
     public void DestroyProjectile()
     {
         if (isQuitting) return;

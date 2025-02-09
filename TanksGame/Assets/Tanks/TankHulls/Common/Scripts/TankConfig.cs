@@ -74,6 +74,13 @@ public class TankConfig : ScriptableObject
         get => maxEngineVolume;
         set => maxEngineVolume = value;
     }
+    
+    public float MaxHealth
+    {
+        get => maxHealth;
+        set => maxHealth = value;
+    }
+    
     public float ArmorRating
     {
         get => armorRating;

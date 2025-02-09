@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AutoCannonEffects : TurretEffects
 {
+    [SerializeField]
+    protected List<AudioClip> fireSounds;
     
     private int fireHash;
     
@@ -13,12 +16,21 @@ public class AutoCannonEffects : TurretEffects
     public void Fire()
     {
         Animator.SetBool(fireHash, true);
-        BaseAudioSource.Stop();
-        PlaySound(fireSound, false);
+        PlayFireSound(GetRandomFireSound(), false);
     }
     
     private void OnFireAnimationEnd()
     {
         Animator.SetBool(fireHash, false);
+    }
+    
+    private AudioClip GetRandomFireSound()
+    {
+        if (fireSounds == null || fireSounds.Count == 0)
+        {
+            return null;
+        }
+        var randomIndex = Random.Range(0, fireSounds.Count);
+        return fireSounds[randomIndex];
     }
 }

@@ -7,6 +7,8 @@ public class LaserTowerEffects : TurretEffects
     private AudioClip warmupSound;
     [SerializeField]
     private AudioClip cooldownSound;
+    [SerializeField]
+    protected AudioClip fireSound;
     
     private int isFiringHash;
     
@@ -21,18 +23,18 @@ public class LaserTowerEffects : TurretEffects
     public void StartFiring()
     {
         Animator.SetBool(isFiringHash, true);
-        PlaySound(warmupSound, false);
+        PlayFireSound(warmupSound, false);
     }
 
     public void StopFiring()
     {
         Animator.SetBool(isFiringHash, false);
-        PlaySound(cooldownSound, false);
+        PlayFireSound(cooldownSound, false);
     }
     
     public void OnWarmupComplete()
     {
-        PlaySound(fireSound, true);
+        PlayFireSound(fireSound, true);
         laserTower.StartContinuousFiring();
     }
 }

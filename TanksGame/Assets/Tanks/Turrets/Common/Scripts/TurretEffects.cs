@@ -10,7 +10,7 @@ public class TurretEffects : MonoBehaviour
     
     [Header("Sound Effects")]
     [SerializeField]
-    protected AudioClip fireSound;
+    protected AudioClip rotationSound;
     
     
     protected AudioSource BaseAudioSource => GetComponent<AudioSource>();
@@ -21,11 +21,17 @@ public class TurretEffects : MonoBehaviour
     
     public void UpdateRotationAudio(float angleDifference, float maxRotationSpeed,float rotationSpeed, bool shouldRotate)
     {
+        if (!BaseAudioSource || !rotationSound)
+        {
+            return;
+        }
+        
         if(shouldRotate != isRotating)
         {
             isRotating = shouldRotate;
             if(isRotating)
             {
+                BaseAudioSource.clip = rotationSound;
                 BaseAudioSource.Play();
             }
             else
@@ -42,21 +48,20 @@ public class TurretEffects : MonoBehaviour
         BaseAudioSource.pitch = pitch;
     }
     
-    protected void PlaySound(AudioClip clip, bool loop)
+    protected void PlayFireSound(AudioClip clip, bool loop)
     {
-        if (!BaseAudioSource || !clip)
+        if (!fireAudioSource || !clip)
         {
             return;
         }
 
-        if (BaseAudioSource.isPlaying && BaseAudioSource.clip == clip)
+        if (fireAudioSource.isPlaying && fireAudioSource.clip == clip)
         {
-            return;
+            fireAudioSource.Stop();
         }
 
-        BaseAudioSource.clip = clip;
-        BaseAudioSource.loop = loop;
-        BaseAudioSource.volume = 0.5f; 
-        BaseAudioSource.Play();
+        fireAudioSource.clip = clip;
+        fireAudioSource.loop = loop;
+        fireAudioSource.Play();
     } 
 }

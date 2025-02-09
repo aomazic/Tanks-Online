@@ -15,6 +15,7 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
     protected T TowerEffects;
 
     private float currentRotationSpeed;
+    private bool shouldRotate;
 
     protected virtual void Awake()
     {
@@ -61,9 +62,10 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
 
         // Apply rotation
         transform.Rotate(Vector3.forward, currentRotationSpeed * Time.deltaTime);
-
-        var shouldRotate = angleDifference > config.aimThreshold;
+        
+        shouldRotate = Mathf.Abs(angleDifference) > config.aimThreshold;
+        
         // Update rotation audio
-        TowerEffects.UpdateRotationAudio(Mathf.Abs(angleDifference), config.rotationSpeed, currentRotationSpeed, shouldRotate);
+        TowerEffects.UpdateRotationAudio(Mathf.Abs(angleDifference), config.rotationSpeed, Mathf.Abs(currentRotationSpeed), shouldRotate);
     }
 }
