@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
@@ -11,7 +13,8 @@ public class TankAudio : MonoBehaviour
     [Header("Track Audio")]
     [SerializeField] private AudioSource tracksSource;
     [SerializeField] private float trackSmoothTime = 0.1f;
-
+    
+    private List<AudioClip> destructionAudioClips;
     private float currentTrackVolume;
     private float trackVolumeVelocity;
     private float maxEngineVolume;
@@ -31,6 +34,8 @@ public class TankAudio : MonoBehaviour
         engineIdleSource.Play();
         engineRunningSource.Play();
         tracksSource.Play();
+        
+        destructionAudioClips = config.destructionAudioClips;
     }
 
     public void UpdateEngineAudio(bool isMoving, float speedPercent)
@@ -55,5 +60,16 @@ public class TankAudio : MonoBehaviour
         
         tracksSource.volume = currentTrackVolume;
         tracksSource.pitch = Mathf.Lerp(0.8f, 1.2f, speedPercent);
+    }
+    
+    public void PlayDestructionAudio()
+    {
+        var clip = destructionAudioClips[Random.Range(0, destructionAudioClips.Count)];
+        engineIdleSource.Stop();
+        engineRunningSource.Stop();
+        tracksSource.Stop();
+        
+        engineRunningSource.transform.SetParent(null);
+        engineIdleSource.PlayOneShot(clip);
     }
 }

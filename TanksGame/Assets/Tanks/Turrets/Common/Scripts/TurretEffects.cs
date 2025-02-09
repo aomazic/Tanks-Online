@@ -12,12 +12,10 @@ public class TurretEffects : MonoBehaviour
     [SerializeField]
     protected AudioClip rotationSound;
     
-    
-    protected AudioSource BaseAudioSource => GetComponent<AudioSource>();
     protected Animator Animator => GetComponent<Animator>();
     
     private bool isRotating;
-    
+    private AudioSource BaseAudioSource => GetComponent<AudioSource>();
     
     public void UpdateRotationAudio(float angleDifference, float maxRotationSpeed,float rotationSpeed, bool shouldRotate)
     {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "TankConfig", menuName = "Tank/Configuration")]
@@ -14,6 +15,7 @@ public class TankConfig : ScriptableObject
     public AudioClip engineIdleClip;
     public AudioClip engineRunningClip;
     public AudioClip trackLoopClip;
+    public List<AudioClip> destructionAudioClips;
     [Range(0, 1)] public float maxEngineVolume = 0.8f;
     
     [Header("Stats")]
@@ -67,6 +69,12 @@ public class TankConfig : ScriptableObject
     {
         get => trackLoopClip;
         set => trackLoopClip = value;
+    }
+    
+    public List<AudioClip> DestructionAudioClips
+    {
+        get => destructionAudioClips;
+        set => destructionAudioClips = value;
     }
     
     public float MaxEngineVolume

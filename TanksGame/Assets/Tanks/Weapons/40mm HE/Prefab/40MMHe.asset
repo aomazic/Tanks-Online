@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da34e402e281d694b8c7ddacc99f93f9, type: 3}
   m_Name: 40MMHe
   m_EditorClassIdentifier: 
-  damage: 18.8
-  explosionRadius: 2
+  damage: 50
+  explosionRadius: 3
   explosionForce: 1
   penetrationRating: 0
   maxRange: 20

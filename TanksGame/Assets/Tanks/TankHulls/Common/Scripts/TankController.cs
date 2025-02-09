@@ -34,7 +34,7 @@ public class TankController : MonoBehaviour, IDamagable
     private TankAudio tankAudio;
 
     
-    void Start()
+    private void Awake()
     {
         tankAudio = GetComponent<TankAudio>();
         rb = GetComponent<Rigidbody2D>();
@@ -44,8 +44,10 @@ public class TankController : MonoBehaviour, IDamagable
         var actionMap = controls.FindActionMap("Tank");
         moveAction = actionMap.FindAction("Move");
         rotateAction = actionMap.FindAction("Rotate");
-        
-        
+    }
+    
+    private void Start()
+    {
         currentHealth = tankConfig.MaxHealth;
         Health = currentHealth;
         
@@ -87,7 +89,6 @@ public class TankController : MonoBehaviour, IDamagable
         
         if(currentHealth <= 0) 
         {
-            OnDestroyed?.Invoke(this);
             Die();
         }
     }
@@ -104,7 +105,8 @@ public class TankController : MonoBehaviour, IDamagable
 
     public void Die()
     {
-        // Play destruction effects
+        OnDestroyed?.Invoke(this);
+        tankAudio.PlayDestructionAudio();
         // Handle game over logic
         gameObject.SetActive(false);
     }

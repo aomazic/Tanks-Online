@@ -20,6 +20,10 @@ MonoBehaviour:
   engineIdleClip: {fileID: 8300000, guid: 2e387eff5fa191d4886026ceea66fbfb, type: 3}
   engineRunningClip: {fileID: 8300000, guid: 7a19d5540bca6414395d89399c482e87, type: 3}
   trackLoopClip: {fileID: 8300000, guid: e4ff47f36eacdf541bd4fe7c8b4321aa, type: 3}
+  destructionAudioClips:
+  - {fileID: 8300000, guid: 70b21d924c7c75e4b8a134d3e3056609, type: 3}
+  - {fileID: 8300000, guid: cfd54ee03133dc64f90eadbf234acf71, type: 3}
+  - {fileID: 8300000, guid: 836fc27a6fc709242b276131cd69e6c6, type: 3}
   maxEngineVolume: 0.8
   maxHealth: 100
   armorRating: 1
