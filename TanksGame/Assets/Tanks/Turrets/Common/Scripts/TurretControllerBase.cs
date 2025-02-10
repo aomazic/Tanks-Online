@@ -8,6 +8,9 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
     
     [Header("Input")]
     [SerializeField] protected PlayerTankInput tankInput;
+    
+    [Header("References")]
+    [SerializeField] private MainCrosshair crosshair;
 
     private Camera mainCamera;
     private Vector2 aimDirection;
@@ -43,8 +46,7 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
     
     private void HandleAimInput()
     {
-        var mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        aimDirection = (mousePosition - transform.position).normalized;
+        aimDirection = (crosshair.WorldPosition - (Vector2)transform.position).normalized;
     }
 
     private void HandleRotation()
@@ -52,6 +54,7 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
         var targetRotation = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg - 90f;
         var currentRotation = transform.rotation.eulerAngles.z;
         var angleDifference = Mathf.DeltaAngle(currentRotation, targetRotation);
+
 
         // Smooth rotation acceleration
         currentRotationSpeed = Mathf.Lerp(
@@ -66,6 +69,7 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
         shouldRotate = Mathf.Abs(angleDifference) > config.aimThreshold;
         
         // Update rotation audio
+        crosshair.SetCrosshairRotation(currentRotation, shouldRotate);
         TowerEffects.UpdateRotationAudio(Mathf.Abs(angleDifference), config.rotationSpeed, Mathf.Abs(currentRotationSpeed), shouldRotate);
     }
 }
