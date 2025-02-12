@@ -1,27 +1,32 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class MainCrosshair : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private float maxDistanceFromTank = 5f;
+    [SerializeField] public TextMeshProUGUI ammoText;
 
     [Header("Visuals")]
     [SerializeField] private Color alignmentColor = Color.green;
     [SerializeField] private Color nonAlignmentColor = Color.red;
-
+    
     private RectTransform crossHair;
+    private Material cursorMaterial;
+    private Image cursorImage;
     private Camera mainCamera;
-    private Vector2 currentWorldPosition;
-    private Image crossHairImage;
     private bool isAligned;
 
-    public Vector2 WorldPosition => currentWorldPosition;
+    public Vector2 currentWorldPosition;
+    
+    private static readonly int ProgressID = Shader.PropertyToID("_Progress");
 
     private void Start()
     {
         crossHair = GetComponent<RectTransform>();
-        crossHairImage = GetComponent<Image>();
+        cursorImage = GetComponent<Image>();
+        cursorMaterial = cursorImage.material;
         mainCamera = Camera.main;
         Cursor.visible = false;
     }
@@ -37,34 +42,21 @@ public class MainCrosshair : MonoBehaviour
         crossHair.position = currentWorldPosition;
     }
 
-    public void SetCrosshairRotation(float angle, bool shouldRotate)
+    public void SetCrosshairRotation(float angle, float angleDifference)
     {
-        // add logic for grading colors based on allignment
         crossHair.rotation = Quaternion.Euler(0, 0, angle);
-
-        if (shouldRotate == !isAligned)
-        {
-            return;
-        }
-
-        if (shouldRotate)
-        {
-            OnNonAlligment();
-        }
-        else
-        {
-            OnAllignment();
-        }
-        isAligned = !shouldRotate;
+        
+        var t = Mathf.InverseLerp(0, 180, angleDifference);
+        cursorImage.color = Color.Lerp(alignmentColor, nonAlignmentColor, t);
     }
-
-    private void OnAllignment()
+        
+    public void UpdateCroshairProgress(float reloadProgress)
     {
-        crossHairImage.color = alignmentColor;
+        cursorMaterial.SetFloat(ProgressID, reloadProgress);
     }
-
-    private void OnNonAlligment()
+    
+    public void SetAmmoText(int currentAmmo, int maxAmmo)
     {
-        crossHairImage.color = nonAlignmentColor;
+        ammoText.text = $"{currentAmmo}/{maxAmmo}";
     }
 }

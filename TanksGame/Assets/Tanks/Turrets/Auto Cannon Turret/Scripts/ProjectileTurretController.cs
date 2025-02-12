@@ -23,10 +23,12 @@ public class ProjectileTurretController : TurretControllerBase<AutoCannonEffects
             projectile.SetActive(false);
             projectiles.Add(i, (projectile, rb));
         }
+        
+        crosshair.SetAmmoText(projectiles.Keys.Count, projectiles.Keys.Count);
     }
     protected override void HandleFireInput()
     {
-        if(canFire)
+        if(canFire && projectiles.Count > 0)
         {
             StartCoroutine(FireCooldown());
             FireProjectile();
@@ -58,12 +60,24 @@ public class ProjectileTurretController : TurretControllerBase<AutoCannonEffects
         rb.linearVelocity = fireDirection * projectileTurretConfig.projectileSpeed;
 
         TowerEffects.Fire();
+        
+        crosshair.SetAmmoText(projectiles.Keys.Count, projectileTurretConfig.totalAmmo);
     }
 
     private IEnumerator FireCooldown()
     {
         canFire = false;
-        yield return new WaitForSeconds(projectileTurretConfig.fireRate);
+        var elapsedTime = 0f;
+        
+        while (elapsedTime < projectileTurretConfig.fireRate)
+        {
+            elapsedTime += Time.deltaTime;
+            var progress = elapsedTime / projectileTurretConfig.fireRate;
+            crosshair.UpdateCroshairProgress(progress);
+            yield return null;
+        }
+    
+        crosshair.UpdateCroshairProgress(1f);
         canFire = true;
     }
 }

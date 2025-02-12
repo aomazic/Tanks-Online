@@ -24,8 +24,6 @@ public class ProjectileBase : MonoBehaviour, IProjectile
     
     private bool isTankHit = false;
     
-
-    private Rigidbody2D rb;
     private Vector2 startPosition;
     private float currentPenetration;
     private bool isQuitting;
@@ -35,7 +33,6 @@ public class ProjectileBase : MonoBehaviour, IProjectile
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
         currentPenetration = stats.PenetrationRating;
     }
 

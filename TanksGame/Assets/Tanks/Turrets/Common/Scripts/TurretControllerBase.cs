@@ -10,9 +10,8 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
     [SerializeField] protected PlayerTankInput tankInput;
     
     [Header("References")]
-    [SerializeField] private MainCrosshair crosshair;
-
-    private Camera mainCamera;
+    [SerializeField] protected MainCrosshair crosshair;
+    
     private Vector2 aimDirection;
 
     protected T TowerEffects;
@@ -22,7 +21,6 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
 
     protected virtual void Awake()
     {
-        mainCamera = Camera.main;
         tankInput.OnFire += HandleFireInput;
         tankInput.OnFireCanceled += HandleFireCanceled;
         TowerEffects = GetComponentInChildren<T>();
@@ -46,7 +44,7 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
     
     private void HandleAimInput()
     {
-        aimDirection = (crosshair.WorldPosition - (Vector2)transform.position).normalized;
+        aimDirection = (crosshair.currentWorldPosition - (Vector2)transform.position).normalized;
     }
 
     private void HandleRotation()
@@ -54,7 +52,6 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
         var targetRotation = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg - 90f;
         var currentRotation = transform.rotation.eulerAngles.z;
         var angleDifference = Mathf.DeltaAngle(currentRotation, targetRotation);
-
 
         // Smooth rotation acceleration
         currentRotationSpeed = Mathf.Lerp(
@@ -66,10 +63,12 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
         // Apply rotation
         transform.Rotate(Vector3.forward, currentRotationSpeed * Time.deltaTime);
         
-        shouldRotate = Mathf.Abs(angleDifference) > config.aimThreshold;
+        var absAngleDifference = Mathf.Abs(angleDifference);
+        
+        shouldRotate = absAngleDifference > config.aimThreshold;
         
         // Update rotation audio
-        crosshair.SetCrosshairRotation(currentRotation, shouldRotate);
-        TowerEffects.UpdateRotationAudio(Mathf.Abs(angleDifference), config.rotationSpeed, Mathf.Abs(currentRotationSpeed), shouldRotate);
+        crosshair.SetCrosshairRotation(currentRotation, absAngleDifference);
+        TowerEffects.UpdateRotationAudio(absAngleDifference, config.rotationSpeed, Mathf.Abs(currentRotationSpeed), shouldRotate);
     }
 }
