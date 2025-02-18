@@ -50,7 +50,7 @@ public class MainCrosshair : MonoBehaviour
         cursorImage.color = Color.Lerp(alignmentColor, nonAlignmentColor, t);
     }
         
-    public void UpdateCroshairProgress(float reloadProgress)
+    public void UpdateCrosshairProgress(float reloadProgress)
     {
         cursorMaterial.SetFloat(ProgressID, reloadProgress);
     }

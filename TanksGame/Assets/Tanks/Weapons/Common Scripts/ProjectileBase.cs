@@ -22,7 +22,7 @@ public class ProjectileBase : MonoBehaviour, IProjectile
     [SerializeField] private List<AudioClip> tankHitExplosionSounds;
     [SerializeField] private List<AudioClip> explosionSounds;
     
-    private bool isTankHit = false;
+    private bool isTankHit;
     
     private Vector2 startPosition;
     private float currentPenetration;

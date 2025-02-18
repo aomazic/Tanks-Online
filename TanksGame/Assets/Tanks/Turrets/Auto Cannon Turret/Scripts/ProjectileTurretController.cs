@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class ProjectileTurretController : TurretControllerBase<AutoCannonEffects>
+public class ProjectileTurretController : TurretControllerBase<ProjectileCannonEffects>
 {
     [Header("Configuration")]
     [SerializeField] private GameObject projectilePrefab;
@@ -13,7 +13,7 @@ public class ProjectileTurretController : TurretControllerBase<AutoCannonEffects
     
     private void Start()
     {
-        TowerEffects = GetComponentInChildren<AutoCannonEffects>();
+        TowerEffects = GetComponentInChildren<ProjectileCannonEffects>();
         
         
         for (var i = 0; i < projectileTurretConfig.totalAmmo; i++)
@@ -26,6 +26,7 @@ public class ProjectileTurretController : TurretControllerBase<AutoCannonEffects
         
         crosshair.SetAmmoText(projectiles.Keys.Count, projectiles.Keys.Count);
     }
+    
     protected override void HandleFireInput()
     {
         if(canFire && projectiles.Count > 0)
@@ -73,11 +74,25 @@ public class ProjectileTurretController : TurretControllerBase<AutoCannonEffects
         {
             elapsedTime += Time.deltaTime;
             var progress = elapsedTime / projectileTurretConfig.fireRate;
-            crosshair.UpdateCroshairProgress(progress);
+            crosshair.UpdateCrosshairProgress(progress);
             yield return null;
         }
     
-        crosshair.UpdateCroshairProgress(1f);
+        crosshair.UpdateCrosshairProgress(1f);
         canFire = true;
+    }
+    
+    public void RefillProjectile()
+    {
+        if (projectiles.Count > projectileTurretConfig.totalAmmo)
+        {
+            return;
+        }
+        
+        var projectile = Instantiate(projectilePrefab);
+        var rb = projectile.GetComponent<Rigidbody2D>();
+        projectile.SetActive(false);
+        projectiles.Add(projectiles.Count, (projectile, rb));
+        crosshair.SetAmmoText(projectiles.Keys.Count, projectileTurretConfig.totalAmmo);
     }
 }

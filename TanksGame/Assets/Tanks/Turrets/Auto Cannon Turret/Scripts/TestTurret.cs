@@ -10,11 +10,11 @@ public class TestTurret : MonoBehaviour
     [SerializeField] private Transform firePoint;
     
     
-    private AutoCannonEffects towerEffects;
+    private ProjectileCannonEffects towerEffects;
 
     private void Start()
     {
-        towerEffects = GetComponent<AutoCannonEffects>();
+        towerEffects = GetComponent<ProjectileCannonEffects>();
         StartCoroutine(FireContinuously());
     }
 

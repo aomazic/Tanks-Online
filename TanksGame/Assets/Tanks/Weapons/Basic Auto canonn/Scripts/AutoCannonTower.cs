@@ -27,11 +27,11 @@ public class AutoCannonTower : TowerBase
     private float timeBetweenShots;
     private float lastShotTime;
     
-    private AutoCannonEffects autoCannonEffects;
+    private ProjectileCannonEffects projectileCannonEffects;
     
     private void Start()
     {
-        autoCannonEffects = GetComponentInChildren<AutoCannonEffects>();
+        projectileCannonEffects = GetComponentInChildren<ProjectileCannonEffects>();
         setRanges();
         currentAccuracy = Accuracy;
         timeBetweenShots = 60f / rpm;
@@ -96,7 +96,7 @@ public class AutoCannonTower : TowerBase
         var (projectile, rb) = GetNextProjectile();
         if (!projectile) return;
 
-        autoCannonEffects.Fire();
+        projectileCannonEffects.Fire();
         LaunchProjectile(projectile, rb);
 
         currentAccuracy -= accuracyFallOffRate;
