@@ -11580,7 +11580,7 @@ Camera:
   far clip plane: 500
   field of view: 60
   orthographic: 1
-  orthographic size: 7.108108
+  orthographic size: 6.6621623
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -11760,7 +11760,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   refillRate: 2.5
-  refillSound: {fileID: 0}
+  refillLoopSound: {fileID: 8300000, guid: 617f44fde43f54e4ab0d3076c304f20c, type: 3}
+  refillEndSound: {fileID: 8300000, guid: 99eb09f204788ff4093385a1c1087eb8, type: 3}
+  refillBeginSound: {fileID: 8300000, guid: 396435606cb473846bfab0a2bf8d88ea, type: 3}
 --- !u!82 &628480949
 AudioSource:
   m_ObjectHideFlags: 0
@@ -15095,6 +15097,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4248306661063059829, guid: cad126a047d6f9f4483e6c99a66d0c5a,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a9276c6d25b81c04688259c2a831edd5, type: 2}
     - target: {fileID: 6495100609075696495, guid: cad126a047d6f9f4483e6c99a66d0c5a,
         type: 3}
       propertyPath: m_LocalPosition.x

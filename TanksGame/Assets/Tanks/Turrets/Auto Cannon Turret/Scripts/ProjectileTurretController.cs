@@ -8,12 +8,16 @@ public class ProjectileTurretController : TurretControllerBase<ProjectileCannonE
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private ProjectileTurretConfig projectileTurretConfig;
     
+    [Header("References")]
+    public TankController tankHullController;
+    
     private bool canFire = true;
     private Dictionary<int, (GameObject projectile, Rigidbody2D rb)> projectiles = new Dictionary<int, (GameObject, Rigidbody2D)>();
     
     private void Start()
     {
         TowerEffects = GetComponentInChildren<ProjectileCannonEffects>();
+        tankHullController = GetComponentInParent<TankController>();
         
         
         for (var i = 0; i < projectileTurretConfig.totalAmmo; i++)
@@ -84,7 +88,7 @@ public class ProjectileTurretController : TurretControllerBase<ProjectileCannonE
     
     public void RefillProjectile()
     {
-        if (projectiles.Count > projectileTurretConfig.totalAmmo)
+        if (projectiles.Count >= projectileTurretConfig.totalAmmo)
         {
             return;
         }
