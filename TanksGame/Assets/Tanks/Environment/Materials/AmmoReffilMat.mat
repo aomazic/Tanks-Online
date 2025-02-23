@@ -67,9 +67,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Active: 0
+    - _Active: 1
     - _EnableExternalAlpha: 0
-    - _GlowIntensity: 1
+    - _GlowIntensity: 3
     - _GlowSpeed: 1
     - _MinAlpha: 1
     - _ZWrite: 0
