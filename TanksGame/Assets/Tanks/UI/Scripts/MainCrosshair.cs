@@ -1,12 +1,12 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class MainCrosshair : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] public TextMeshProUGUI ammoText;
+    [SerializeField] private TextMeshProUGUI ammoText;
+    [SerializeField] private Slider healthSlider;
 
     [Header("Visuals")]
     [SerializeField] private Color alignmentColor = Color.green;
@@ -17,6 +17,8 @@ public class MainCrosshair : MonoBehaviour
     private Image cursorImage;
     private Camera mainCamera;
     private bool isAligned;
+    
+    private float healthPercentage = 1f;
 
     public Vector2 currentWorldPosition;
     
@@ -29,6 +31,8 @@ public class MainCrosshair : MonoBehaviour
         cursorMaterial = cursorImage.material;
         mainCamera = Camera.main;
         Cursor.visible = false;
+        
+        healthSlider.value = healthPercentage;
     }
 
     private void Update()
@@ -58,5 +62,11 @@ public class MainCrosshair : MonoBehaviour
     public void SetAmmoText(int currentAmmo, int maxAmmo)
     {
         ammoText.text = $"{currentAmmo}/{maxAmmo}";
+    }
+
+    public void UpdateHealth(float currentHealth, float maxHealth)
+    {
+        healthPercentage = currentHealth / maxHealth;
+        healthSlider.value = healthPercentage;
     }
 }

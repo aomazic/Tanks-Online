@@ -2,17 +2,22 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.Serialization;
 
-public class LoadingUi : MonoBehaviour
+public class LoadingUI : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private TMP_Text loadingText;
     [SerializeField] private RectTransform contentRect;
     [SerializeField] private RectTransform viewportRect;
-
+    
+    [Header("Audio")]
+    [SerializeField] private AudioClip loadingStartSound;
+    [SerializeField] private AudioClip loadingLoopSound;
+    
     [Header("Settings")]
-    [SerializeField] private float typingSpeed = 0.02f;
-    [SerializeField] private float moduleLoadDelay = 0.2f;
+    [SerializeField] private float typingInterval = 0.002f;
+    [SerializeField] private float moduleLoadDelay = 0.1f;
     [SerializeField] private string[] loadingMessages = new string[]
     {
         "Initializing ATA FUE System...",
@@ -58,9 +63,18 @@ public class LoadingUi : MonoBehaviour
         "Confirming: All Systems Aligned for Total Domination..."
     };
 
+    private AudioSource audioSource;
+
     private void Start()
     {
         loadingText.text = "";
+        audioSource = GetComponent<AudioSource>();
+        
+        if (loadingStartSound != null && loadingLoopSound != null)
+        {
+            StartCoroutine(BackgroundSoundController());
+        }
+
         StartCoroutine(SimulateConsoleLoading());
     }
 
@@ -70,7 +84,7 @@ public class LoadingUi : MonoBehaviour
         {
             yield return StartCoroutine(TypeMessage(message));
             yield return new WaitForSeconds(moduleLoadDelay);
-            AppendText($"Success");
+            AppendText("Success");
             yield return new WaitForSeconds(moduleLoadDelay);
             ScrollToBottom();
         }
@@ -84,10 +98,10 @@ public class LoadingUi : MonoBehaviour
         foreach (var c in message)
         {
             loadingText.text += c;
-            yield return new WaitForSeconds(typingSpeed);
+            yield return new WaitForSeconds(typingInterval);
         }
 
-        loadingText.text += "\n"; // Add a newline after the message
+        loadingText.text += "\n";
     }
 
     private void AppendText(string message)
@@ -99,26 +113,31 @@ public class LoadingUi : MonoBehaviour
     private void OnLoadingComplete()
     {
         AppendText("Welcome Commander! All Systems Online.");
-        // Proceed to the next scene or enable UI for the game
-        // Example:
-        // UnityEngine.SceneManagement.SceneController.LoadScene("MainScene");
     }
     
     private void UpdateContentHeight()
     {
-        // Dynamically resize the content RectTransform to fit the text
-        Vector2 size = contentRect.sizeDelta;
+        var size = contentRect.sizeDelta;
         size.y = loadingText.preferredHeight;
         contentRect.sizeDelta = size;
     }
+    
+    private IEnumerator BackgroundSoundController()
+    {
+        audioSource.PlayOneShot(loadingStartSound);
+        yield return new WaitForSeconds(loadingStartSound.length - 2f);
+        audioSource.loop = true;
+        audioSource.clip = loadingLoopSound;
+        audioSource.Play();
+    }
+
     private void ScrollToBottom()
     {
         Vector2 startPosition = contentRect.anchoredPosition;
-        Vector2 targetPosition = new Vector2(startPosition.x, Mathf.Max(0, contentRect.sizeDelta.y - viewportRect.sizeDelta.y));
-        
+        Vector2 targetPosition = new Vector2(
+            startPosition.x,
+            Mathf.Max(0, contentRect.sizeDelta.y - viewportRect.sizeDelta.y)
+        );
         contentRect.anchoredPosition = targetPosition;
     }
-    
-
-    
 }

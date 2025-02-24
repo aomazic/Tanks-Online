@@ -54,10 +54,20 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  burstParticleEmitter: {fileID: 5009056125902849848}
-  explosionAudioSource: {fileID: 0}
-  tankHitExplosionSounds: []
-  explosionSounds: []
+  burstParticleEmitter: {fileID: 5009056125902849848, guid: 6e0e333f2072fa540851e80b7264c922,
+    type: 3}
+  explosionAudioSource: {fileID: 4119645104354004618, guid: 6e0e333f2072fa540851e80b7264c922,
+    type: 3}
+  tankHitExplosionSounds:
+  - {fileID: 8300000, guid: 649c202ad35f09e4a9e00b08ae160186, type: 3}
+  - {fileID: 8300000, guid: b962e2e74be19c041bdcf357b6252d76, type: 3}
+  - {fileID: 8300000, guid: 4eb69fdafe4eee943b40706c2b1c6910, type: 3}
+  - {fileID: 8300000, guid: a0a280bf3e125a045bd80943c4762b85, type: 3}
+  explosionSounds:
+  - {fileID: 8300000, guid: 477e7d94a291e154d96116b3fe72f8f0, type: 3}
+  - {fileID: 8300000, guid: 2d8337a89c3fe584db51c2f49d1de60c, type: 3}
+  - {fileID: 8300000, guid: 44917f7ec31241143a661b67c1beb75c, type: 3}
+  - {fileID: 8300000, guid: eae47561a34ac0b4ca776c61276edce2, type: 3}
 --- !u!50 &3073532512823701611
 Rigidbody2D:
   serializedVersion: 5
@@ -423,12 +433,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33f0016052aef364d9daa010f3f486e9, type: 3}
---- !u!198 &5009056125902849848 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 7672471521298312371, guid: 33f0016052aef364d9daa010f3f486e9,
-    type: 3}
-  m_PrefabInstance: {fileID: 3456976928503131019}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7714747168374120964 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4965763532659722639, guid: 33f0016052aef364d9daa010f3f486e9,

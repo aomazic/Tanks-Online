@@ -15,6 +15,9 @@ public class TankController : MonoBehaviour, IDamagable
     [Header("Input")]
     [SerializeField] private InputActionAsset controls;
     
+    [Header("References")]
+    [SerializeField] private MainCrosshair crosshair;
+    
     public event Action<IDamagable> OnDestroyed;
     public event Action<IDamagable> OnDamaged; 
     public Rigidbody2D Rigidbody => rb;
@@ -86,6 +89,8 @@ public class TankController : MonoBehaviour, IDamagable
     {
         currentHealth -= damage / tankConfig.ArmorRating;
         OnDamaged?.Invoke(this);
+        
+        crosshair.UpdateHealth(currentHealth, tankConfig.MaxHealth);
         
         if(currentHealth <= 0) 
         {
