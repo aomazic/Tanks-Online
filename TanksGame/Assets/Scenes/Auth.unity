@@ -429,7 +429,6 @@ MonoBehaviour:
   consoleInput: {fileID: 841360864}
   infoTextRef: {fileID: 1908941691}
   terminalText: {fileID: 440608918}
-  webClient: {fileID: 2048500282}
   typeSpeed: 0.05
   defaultTerminalText: "===================================\r\n       Chose Option
     to Enter System\r\n===================================\r\n\r\n   1. Login\r\n  
@@ -1642,7 +1641,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.028, y: 0.062000003}
   m_AnchorMax: {x: 1, y: 0.49370372}
-  m_AnchoredPosition: {x: 1.449707, y: 0.20626831}
+  m_AnchoredPosition: {x: 1.449707, y: 0.2062378}
   m_SizeDelta: {x: -2.8994, y: -0.41254}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1467707185
@@ -1972,7 +1971,7 @@ GameObject:
   - component: {fileID: 2048500283}
   - component: {fileID: 2048500282}
   m_Layer: 0
-  m_Name: Controllers
+  m_Name: WebController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
-public class MainMenuButton : MonoBehaviour, IPointerEnterHandler
+public class ButtonEffects : MonoBehaviour, IPointerEnterHandler
 {
     [Header("Audio")]
     [SerializeField] private AudioClip hoverSound;

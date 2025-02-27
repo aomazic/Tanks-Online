@@ -9,25 +9,27 @@ public class ConsoleController : MonoBehaviour
     [SerializeField] private TMP_InputField consoleInput;
     [SerializeField] private TMP_Text infoTextRef;
     [SerializeField] private TMP_Text terminalText;
-    [SerializeField] private WebClient webClient;
-
+    
     [Header("Settings")]
     [SerializeField] private float typeSpeed = 0.05f;
     [SerializeField] [TextArea(5,10)] private string defaultTerminalText = "";
 
     private Coroutine typingCoroutine;
     private ConsoleState currentState = ConsoleState.MainMenu;
-
     
     private string tempPassword = "";
     private string tempUsername = "";
     private string tempEmail = "";
+    
+    private WebClient webClient;
     
     private void Start()
     {
         terminalText.text = TerminalTexts.GetTerminalText(currentState);
         TypeText("Welcome Commander! Type '1', '2', or '3' to proceed. To exit, type 'exit'", infoTextRef);
         consoleInput.ActivateInputField();
+        
+        webClient = WebClient.Instance;
     }
 
     public void OnSubmit()

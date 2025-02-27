@@ -1,4 +1,4 @@
-﻿package hr.antitalent.tanks_backend.configurations;
+package hr.antitalent.tanks_backend.configurations;
 
 import hr.antitalent.tanks_backend.filters.JwtHandshakeInterceptor;
 import lombok.RequiredArgsConstructor;

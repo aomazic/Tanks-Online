@@ -6,6 +6,19 @@ public class WebClient : MonoBehaviour
 {
     private const string BaseUrl = "http://localhost:8080/api";
     
+    public static WebClient Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
     public IEnumerator Login(string username, string password, System.Action<bool, string> callback)
     {
         var form = new WWWForm();
@@ -102,6 +115,31 @@ public class WebClient : MonoBehaviour
 
         request.SetRequestHeader("Authorization", $"Bearer {TokenManager.GetToken()}");
         request.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            callback(true, request.downloadHandler.text);
+        }
+        else
+        {
+            callback(false, request.error);
+        }
+    }
+    
+    public IEnumerator GetWaitingGameSessions(int page, int size, System.Action<bool, string> callback)
+    {
+        string url = $"{BaseUrl}/game-sessions/status/WAITING?page={page}&size={size}";
+        using var request = UnityWebRequest.Get(url);
+
+        if (!TokenManager.HasToken())
+        {
+            callback(false, "No token available. Please log in.");
+            yield break;
+        }
+
+        request.SetRequestHeader("Authorization", $"Bearer {TokenManager.GetToken()}");
 
         yield return request.SendWebRequest();
 

@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/gamesessions")
+@RequestMapping("/api/game-sessions")
 @RequiredArgsConstructor
 public class GameSessionController {
     private final GameSessionService gameSessionService;

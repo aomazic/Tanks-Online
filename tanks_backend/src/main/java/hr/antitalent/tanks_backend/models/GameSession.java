@@ -28,14 +28,16 @@ public class GameSession {
     private String name;
 
     private String password;
+    
+    private int maxPlayers;
 
     @Enumerated(EnumType.STRING)
     private GameSessionStatus status = GameSessionStatus.WAITING;
 
     private LocalDateTime startTime;
+    
     private LocalDateTime endTime;
-
-
+    
     private String winningTeam;
 
     @Type(JsonBinaryType.class)
