@@ -11,23 +11,20 @@ public class ScrollItem : MonoBehaviour
     [SerializeField] private Image passwordIcon;
     
     public RectTransform RectTransform { get; private set; }
-    public int Index { get; private set; }
     
     public event System.Action<int> OnClick;
 
-    private Button _button;
+    private Button button;
 
     private void Awake()
     {
         RectTransform = GetComponent<RectTransform>();
-        _button = GetComponent<Button>();
-        _button.onClick.AddListener(() => OnClick?.Invoke(Index));
+        button = GetComponent<Button>();
     }
 
-    public void SetData(int index, GameSession data)
+    public void SetData(GameSession data)
     {
-        Index = index;
-        roomName.text = data.roomName;
+        roomName.text = data.name;
         playerCount.text = $"{data.currentPlayers}/{data.maxPlayers}";
         passwordIcon.gameObject.SetActive(!string.IsNullOrEmpty(data.password));
     }

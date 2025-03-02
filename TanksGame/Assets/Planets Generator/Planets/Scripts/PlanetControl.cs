@@ -26,7 +26,7 @@ public class PlanetControl : MonoBehaviour
     {
         if (!Application.isPlaying) return;
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(1))
         {
             lightPosition = mainCamera.ScreenToViewportPoint(Input.mousePosition);
             UpdateLightPosition();

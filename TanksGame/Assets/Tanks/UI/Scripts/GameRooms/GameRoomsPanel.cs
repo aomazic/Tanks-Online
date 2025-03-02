@@ -1,12 +1,12 @@
+// csharp
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
 public class GameRoomsPanel : MonoBehaviour
 {
-    [Header("References")] 
+    [Header("References")]
     [SerializeField] private Button refreshButton;
     [SerializeField] private GameObject loadingIndicator;
     [SerializeField] private int pageSize = 10;
@@ -15,15 +15,20 @@ public class GameRoomsPanel : MonoBehaviour
     private int currentPage = 0;
     private bool hasMoreData = true;
     
-    private WebClient webClient;
-    private RecyclableScrollView scrollView;
-    
+    private IWebClient webClient;
+    private DynamicScrollView scrollView;
+
+    public void SetWebClient(IWebClient client)
+    {
+        webClient = client;
+    }
+
     private void Start()
     {
-        webClient = WebClient.Instance;
-        scrollView = GetComponentInChildren<RecyclableScrollView>();
-        
-        scrollView.OnItemClicked += HandleRoomItemClick;
+        // If no custom client was injected, fallback to WebClient.Instance.
+        webClient ??= WebClient.Instance;
+
+        scrollView = GetComponentInChildren<DynamicScrollView>();
         refreshButton.onClick.AddListener(RefreshRooms);
     }
 
@@ -48,7 +53,7 @@ public class GameRoomsPanel : MonoBehaviour
     private IEnumerator FetchCoroutine()
     {
         loadingIndicator.SetActive(true);
-        
+
         yield return StartCoroutine(webClient.GetWaitingGameSessions(
             currentPage,
             pageSize,
@@ -75,7 +80,7 @@ public class GameRoomsPanel : MonoBehaviour
     private void HandleRoomItemClick(int index)
     {
         GameSession selectedRoom = roomsData[index];
-        
+
         if (!string.IsNullOrEmpty(selectedRoom.password))
         {
             ShowPasswordPrompt(selectedRoom);
@@ -89,18 +94,17 @@ public class GameRoomsPanel : MonoBehaviour
     private void ShowPasswordPrompt(GameSession room)
     {
         // Implement password input UI
-        Debug.Log($"Password required for room: {room.roomName}");
+        Debug.Log($"Password required for room: {room.name}");
     }
 
     private void JoinRoom(GameSession room)
     {
-        Debug.Log($"Joining room: {room.roomName}");
+        Debug.Log($"Joining room: {room.name}");
         // Implement actual join logic
     }
 
     private void OnDestroy()
     {
-        scrollView.OnItemClicked -= HandleRoomItemClick;
         refreshButton.onClick.RemoveAllListeners();
     }
 }

@@ -1,7 +1,9 @@
-﻿[System.Serializable]
+﻿using UnityEngine.Serialization;
+
+[System.Serializable]
 public class GameSession
 {
-    public string roomName;
+    public string name;
     public string password;
     public int maxPlayers;
     public int currentPlayers;

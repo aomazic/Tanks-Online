@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class WebClient : MonoBehaviour
+public class WebClient : MonoBehaviour, IWebClient
 {
     private const string BaseUrl = "http://localhost:8080/api";
     
