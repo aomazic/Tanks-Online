@@ -40,4 +40,10 @@ public class MockWebClient : MonoBehaviour, IWebClient
         yield return null;
         callback(true, MockResponses.GameSessionResponse);
     }
+    
+    public IEnumerator CreateGameSession(string name, string password, Action<bool, GameSession> callback)
+    {
+        yield return null;
+        callback(true, new GameSession());
+    }
 }

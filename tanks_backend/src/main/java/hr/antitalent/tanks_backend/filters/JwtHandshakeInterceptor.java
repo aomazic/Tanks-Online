@@ -29,8 +29,14 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                                    @NonNull WebSocketHandler wsHandler,
                                    @NonNull Map<String, Object> attributes) {
         String jwt = extractToken(request);
-        String username = jwtService.extractUsername(jwt);
 
+        if (jwt == null) {
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return false;
+        }
+        
+        String username = jwtService.extractUsername(jwt);
+        
         if (username == null) {
             response.setStatusCode(HttpStatus.NOT_FOUND);
             return false;
@@ -38,7 +44,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
         
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
         
-        if (jwt != null && jwtService.isTokenValid(jwt, userDetails)) {
+        if (jwtService.isTokenValid(jwt, userDetails)) {
             attributes.put("user", userDetails);
             return true;
         }
@@ -48,11 +54,6 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     private String extractToken(ServerHttpRequest request) {
-        if (request instanceof ServletServerHttpRequest servletRequest) {
-            String token = servletRequest.getServletRequest().getParameter("token");
-            if (token != null) return token;
-        }
-        
         List<String> headers = request.getHeaders().get("Authorization");
         if (headers != null && !headers.isEmpty()) {
             String header = headers.getFirst();

@@ -35,7 +35,6 @@ public class GameSessionService {
         GameSession gameSession = GameSession.builder()
                 .name(dto.name())
                 .password(dto.password())
-                .gameSettings(dto.gameSettings())
                 .status(GameSessionStatus.WAITING)
                 .build();
 

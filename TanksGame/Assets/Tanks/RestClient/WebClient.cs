@@ -19,6 +19,7 @@ public class WebClient : MonoBehaviour, IWebClient
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
+    
     public IEnumerator Login(string username, string password, System.Action<bool, string> callback)
     {
         var form = new WWWForm();
@@ -150,6 +151,47 @@ public class WebClient : MonoBehaviour, IWebClient
         else
         {
             callback(false, request.error);
+        }
+    }
+    
+    public IEnumerator CreateGameSession(string name, string password, System.Action<bool, GameSession> callback)
+    {
+        var form = new WWWForm();
+        form.AddField("name", name);
+        
+        if (!string.IsNullOrEmpty(password))
+        {
+            form.AddField("password", password);
+        }
+
+        using var request = UnityWebRequest.Post($"{BaseUrl}/game-sessions", form);
+        
+        request.SetRequestHeader("Content-Type", "application/json");
+    
+        if (!TokenManager.HasToken())
+        {
+            callback(false, null);
+            yield break;
+        }
+    
+        request.SetRequestHeader("Authorization", $"Bearer {TokenManager.GetToken()}");
+    
+        // Construct the JSON payload
+        string jsonPayload = $"{{\"name\":\"{name}\",\"password\":\"{password}\"}}";
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+    
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            GameSession gameSession = JsonUtility.FromJson<GameSession>(request.downloadHandler.text);
+            callback(true, gameSession);
+        }
+        else
+        {
+            Debug.LogError($"Create game session failed: {request.error}");
+            callback(false, null);
         }
     }
 }

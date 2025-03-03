@@ -9,4 +9,5 @@ public interface IWebClient
     IEnumerator GuestRegister(Action<bool, string> callback);
     IEnumerator UpdateUserStatus(string username, UserStatus status, Action<bool, string> callback);
     IEnumerator GetWaitingGameSessions(int page, int size, Action<bool, string> callback);
+    IEnumerator CreateGameSession(string name, string password, System.Action<bool, GameSession> callback);
 }
