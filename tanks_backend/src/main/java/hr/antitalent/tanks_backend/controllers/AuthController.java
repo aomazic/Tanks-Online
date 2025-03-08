@@ -1,8 +1,12 @@
 package hr.antitalent.tanks_backend.controllers;
 
-import hr.antitalent.tanks_backend.models.User;
+import hr.antitalent.tanks_backend.dto.AuthRequest;
+import hr.antitalent.tanks_backend.dto.AuthResponse;
+import hr.antitalent.tanks_backend.dto.RegistrationRequest;
 import hr.antitalent.tanks_backend.services.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,55 +19,51 @@ public class AuthController {
     /**
      * Registers a new user.
      *
-     * @param username The username of the user.
-     * @param password The password of the user.
-     * @param email The email of the user.                     
-     * @return ResponseEntity with registration status message.
+     * @param request Registration data containing username, password, and email
+     * @return ResponseEntity with authentication response containing id, username and token
      */
     @PostMapping("/register")
-    public ResponseEntity<String> register(
-            @RequestParam String username,
-            @RequestParam String password,
-            @RequestParam String email
-    ) {
-        String registrationResult = authenticationService.register(username, password, email);
-        return ResponseEntity.ok(registrationResult);
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegistrationRequest request) {
+        AuthResponse response = authenticationService.register(
+                request.getUsername(),
+                request.getPassword(),
+                request.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
      * Authenticates a user and logs them in.
      *
-     * @param username The username of the user.
-     * @param password The password of the user.
-     * @return ResponseEntity with the authentication token or error message.
+     * @param request Authentication data containing username and password
+     * @return ResponseEntity with authentication response containing id, username and token
      */
     @PostMapping("/login")
-    public ResponseEntity<String> login(
-            @RequestParam String username,
-            @RequestParam String password) {
-        String authToken = authenticationService.authenticate(username, password);
-        return ResponseEntity.ok(authToken);
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
+        AuthResponse response = authenticationService.authenticate(
+                request.getUsername(),
+                request.getPassword());
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Registers a guest user.
      *
-     * @return ResponseEntity with guest registration status message.
+     * @return ResponseEntity with authentication response containing id, username and token
      */
-    @PostMapping("/guest-register")
-    public ResponseEntity<String> guestRegister() {
-        String guestToken = authenticationService.guestRegister();
-        return ResponseEntity.ok(guestToken);
+    @PostMapping("/guest")
+    public ResponseEntity<AuthResponse> registerGuest() {
+        AuthResponse response = authenticationService.guestRegister();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
-     * Checks if username is already taken.
+     * Checks if username is available.
      *
-     * @param username The username to check.
-     * @return ResponseEntity with username availability status message.
+     * @param username The username to check
+     * @return ResponseEntity with boolean value indicating if username is available
      */
-    @GetMapping("/check-username/{username}")
-    public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
+    @GetMapping("/{username}")
+    public ResponseEntity<Boolean> isUsernameAvailable(@PathVariable String username) {
         return ResponseEntity.ok(authenticationService.checkUsername(username));
     }
 }

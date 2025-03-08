@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum ConsoleState
 {
-    MainMenu, 
+    AuthMain, 
     LoginPassword, 
     LoginUsername,
     RegisterEmail, 

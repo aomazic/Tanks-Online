@@ -7,7 +7,7 @@ public static class TerminalTexts
 {
     private static readonly Dictionary<ConsoleState, string> terminalTextMap = new Dictionary<ConsoleState, string>
     {
-        { ConsoleState.MainMenu, @"
+        { ConsoleState.AuthMain, @"
 ===================================
    Choose Option to Enter System
 ===================================

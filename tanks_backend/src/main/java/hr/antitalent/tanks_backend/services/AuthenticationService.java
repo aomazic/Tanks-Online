@@ -1,5 +1,6 @@
 package hr.antitalent.tanks_backend.services;
 
+import hr.antitalent.tanks_backend.dto.AuthResponse;
 import hr.antitalent.tanks_backend.enums.UserRole;
 import hr.antitalent.tanks_backend.enums.UserStatus;
 import hr.antitalent.tanks_backend.models.User;
@@ -23,7 +24,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public String register(String username, String password, String email) {
+    public AuthResponse register(String username, String password, String email) {
         try {
             User user = User.builder()
                     .username(username)
@@ -32,23 +33,25 @@ public class AuthenticationService {
                     .role(UserRole.PLAYER)
                     .status(UserStatus.ONLINE)
                     .build();
-            userRepository.save(user);
-            return jwtService.generateToken(user);
+            User savedUser = userRepository.save(user);
+            String token = jwtService.generateToken(savedUser);
+            return new AuthResponse(savedUser.getId(), savedUser.getUsername(), token);
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("Username or email already exists");
         }
     }
 
-    public String authenticate(String username, String password) {
+    public AuthResponse authenticate(String username, String password) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return jwtService.generateToken(user);
+        String token = jwtService.generateToken(user);
+        return new AuthResponse(user.getId(), user.getUsername(), token);
     }
 
-    public String guestRegister() {
+    public AuthResponse guestRegister() {
         String guestUsername = String.format("guest_%s", UUID.randomUUID().toString().substring(0, 8));
         User guestUser = User.builder()
                 .username(guestUsername)
@@ -58,11 +61,12 @@ public class AuthenticationService {
                 .status(UserStatus.ONLINE)
                 .build();
 
-        userRepository.save(guestUser);
-        return jwtService.generateToken(guestUser);
+        User savedUser = userRepository.save(guestUser);
+        String token = jwtService.generateToken(savedUser);
+        return new AuthResponse(savedUser.getId(), savedUser.getUsername(), token);
     }
-    
+
     public boolean checkUsername(String username) {
-        return userRepository.existsByUsername(username);
+        return !userRepository.existsByUsername(username);
     }
 }

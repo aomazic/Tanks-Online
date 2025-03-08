@@ -63,7 +63,7 @@ public class WebClient : MonoBehaviour, IWebClient
     
     public IEnumerator CheckUsername(string username, System.Action<bool, string> callback)
     {
-        using var request = UnityWebRequest.Get($"{BaseUrl}/auth/check-username/{username}");
+        using var request = UnityWebRequest.Get($"{BaseUrl}/auth/{username}");
 
         yield return request.SendWebRequest();
 
@@ -87,7 +87,7 @@ public class WebClient : MonoBehaviour, IWebClient
     
     public IEnumerator GuestRegister(System.Action<bool, string> callback)
     {
-        using var request = UnityWebRequest.Post($"{BaseUrl}/auth/guest-register", new WWWForm());
+        using var request = UnityWebRequest.Post($"{BaseUrl}/auth/guest", new WWWForm());
         
         yield return request.SendWebRequest();
 
@@ -108,13 +108,13 @@ public class WebClient : MonoBehaviour, IWebClient
 
         using var request = UnityWebRequest.Post($"{BaseUrl}/user/{username}/status", form);
 
-        if (!TokenManager.HasToken())
+        if (!UserInfoManager.IsUserAuthenticated())
         {
             callback(false, "No token available. Please log in.");
             yield break;
         }
 
-        request.SetRequestHeader("Authorization", $"Bearer {TokenManager.GetToken()}");
+        request.SetRequestHeader("Authorization", $"Bearer {UserInfoManager.GetToken()}");
         request.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
         yield return request.SendWebRequest();
@@ -134,13 +134,13 @@ public class WebClient : MonoBehaviour, IWebClient
         string url = $"{BaseUrl}/game-sessions/status/WAITING?page={page}&size={size}";
         using var request = UnityWebRequest.Get(url);
 
-        if (!TokenManager.HasToken())
+        if (!UserInfoManager.IsUserAuthenticated())
         {
             callback(false, "No token available. Please log in.");
             yield break;
         }
 
-        request.SetRequestHeader("Authorization", $"Bearer {TokenManager.GetToken()}");
+        request.SetRequestHeader("Authorization", $"Bearer {UserInfoManager.GetToken()}");
 
         yield return request.SendWebRequest();
 
@@ -168,13 +168,13 @@ public class WebClient : MonoBehaviour, IWebClient
         
         request.SetRequestHeader("Content-Type", "application/json");
     
-        if (!TokenManager.HasToken())
+        if (!UserInfoManager.IsUserAuthenticated())
         {
             callback(false, null);
             yield break;
         }
     
-        request.SetRequestHeader("Authorization", $"Bearer {TokenManager.GetToken()}");
+        request.SetRequestHeader("Authorization", $"Bearer {UserInfoManager.GetToken()}");
     
         // Construct the JSON payload
         string jsonPayload = $"{{\"name\":\"{name}\",\"password\":\"{password}\"}}";

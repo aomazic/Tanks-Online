@@ -142,7 +142,7 @@ Material:
     - seed: 1.58
     - size: 8
     - stretch: 2.001
-    - time: 38.709995
+    - time: 15.13445
     - time_speed: 1.1990646
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

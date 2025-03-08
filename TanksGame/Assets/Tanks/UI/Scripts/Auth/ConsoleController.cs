@@ -15,11 +15,12 @@ public class ConsoleController : MonoBehaviour
     [SerializeField] [TextArea(5,10)] private string defaultTerminalText = "";
 
     private Coroutine typingCoroutine;
-    private ConsoleState currentState = ConsoleState.MainMenu;
+    private ConsoleState currentState = ConsoleState.AuthMain;
     
-    private string tempPassword = "";
-    private string tempUsername = "";
-    private string tempEmail = "";
+    private User user;
+    
+    private string tempPassword;
+    private string tempEmail;
     
     private WebClient webClient;
     
@@ -44,7 +45,7 @@ public class ConsoleController : MonoBehaviour
 
         switch (currentState)
         {
-            case ConsoleState.MainMenu:
+            case ConsoleState.AuthMain:
                 HandleMainMenuInput(userInput);
                 break;
             case ConsoleState.LoginUsername:
@@ -75,16 +76,19 @@ public class ConsoleController : MonoBehaviour
                 currentState = ConsoleState.LoginUsername;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 TypeText("Enter your username: ", infoTextRef);
+                consoleInput.contentType = TMP_InputField.ContentType.Standard;
                 break;
             case "2":
                 currentState = ConsoleState.RegisterEmail;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 TypeText("Enter your e-mail. Type 'back' to return or 'exit' to quit.", infoTextRef);
+                consoleInput.contentType = TMP_InputField.ContentType.EmailAddress;
                 break;
             case "3":
                 currentState = ConsoleState.Guest;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 HandleGuestRegister();
+                consoleInput.contentType = TMP_InputField.ContentType.Standard;
                 break;
             case "exit":
                 ExitCase();
@@ -102,9 +106,10 @@ public class ConsoleController : MonoBehaviour
         switch (userInput)
         {
             case "back":
-                currentState = ConsoleState.MainMenu;
+                currentState = ConsoleState.AuthMain;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 TypeText("Choose Option to Enter System", infoTextRef);
+                consoleInput.contentType = TMP_InputField.ContentType.Standard;
                 break;
             case "exit":
                 ExitCase();
@@ -112,8 +117,9 @@ public class ConsoleController : MonoBehaviour
             default:
                 currentState = ConsoleState.LoginPassword;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
-                tempUsername = userInput;
+                user.username = userInput;
                 TypeText("Enter your password: ", infoTextRef);
+                consoleInput.contentType = TMP_InputField.ContentType.Password;
                 break;
         }
     }
@@ -123,21 +129,21 @@ public class ConsoleController : MonoBehaviour
         switch (userInput)
         {
             case "back":
-                currentState = ConsoleState.MainMenu;
+                currentState = ConsoleState.AuthMain;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 TypeText("Choose Option to Enter System", infoTextRef);
+                consoleInput.contentType = TMP_InputField.ContentType.Standard;
                 break;
             case "exit":
                 ExitCase();
                 break;
             default:
                 tempPassword = userInput;
-                StartCoroutine(webClient.Login(tempUsername, tempPassword, (success, response) =>
+                StartCoroutine(webClient.Login(user.username, tempPassword, (success, response) =>
                 {
                     if (success)
                     {
-                        TokenManager.SaveToken(response);
-                        UserInfoManager.SaveUserName(tempUsername);
+                        user.token = response;
                         currentState = ConsoleState.Entering;
                         TypeText("Login successful!", infoTextRef);
                         EnterGame();
@@ -147,6 +153,7 @@ public class ConsoleController : MonoBehaviour
                         currentState = ConsoleState.LoginUsername;
                         terminalText.text = TerminalTexts.GetTerminalText(currentState);
                         TypeText(response, infoTextRef, "Login failed! Enter you username");
+                        consoleInput.contentType = TMP_InputField.ContentType.Standard;
                     }
                 }));
                 break;
@@ -158,9 +165,10 @@ public class ConsoleController : MonoBehaviour
         switch (userInput)
         {
             case "back":
-                currentState = ConsoleState.MainMenu;
+                currentState = ConsoleState.AuthMain;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 TypeText("Choose Option to Enter System", infoTextRef);
+                consoleInput.contentType = TMP_InputField.ContentType.Standard;
                 break;
             case "exit":
                 ExitCase();
@@ -170,6 +178,7 @@ public class ConsoleController : MonoBehaviour
                 currentState = ConsoleState.RegisterUserName;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 TypeText("Chose your username: ", infoTextRef);
+                consoleInput.contentType = TMP_InputField.ContentType.Standard;
                 break;
         }
     }
@@ -179,28 +188,31 @@ public class ConsoleController : MonoBehaviour
         switch (userInput)
         {
             case "back":
-                currentState = ConsoleState.MainMenu;
+                currentState = ConsoleState.AuthMain;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 TypeText("Choose Option to Enter System", infoTextRef);
+                consoleInput.contentType = TMP_InputField.ContentType.Standard;
                 break;
             case "exit":
                 ExitCase();
                 break;
             default:
-                tempUsername = userInput;
-                StartCoroutine(webClient.CheckUsername(tempUsername, (success, response) =>
+                user.username = userInput;
+                StartCoroutine(webClient.CheckUsername(user.username, (success, response) =>
                 {
                     if (success)
                     {
                         currentState = ConsoleState.RegisterPassword;
                         terminalText.text = TerminalTexts.GetTerminalText(currentState);
                         TypeText("Chose your password: ", infoTextRef);
+                        consoleInput.contentType = TMP_InputField.ContentType.Password;
                     }
                     else
                     {
                         currentState = ConsoleState.RegisterUserName;
                         terminalText.text = TerminalTexts.GetTerminalText(currentState);
                         TypeText(response, infoTextRef,"Username is taken! Enter a new username:");
+                        consoleInput.contentType = TMP_InputField.ContentType.Standard;
                     }
                 }));
                 break;
@@ -213,21 +225,21 @@ public class ConsoleController : MonoBehaviour
         switch (userInput)
         {
             case "back":
-                currentState = ConsoleState.MainMenu;
+                currentState = ConsoleState.AuthMain;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 TypeText("Choose Option to Enter System", infoTextRef);
+                consoleInput.contentType = TMP_InputField.ContentType.Standard;
                 break;
             case "exit":
                 ExitCase();
                 break;
             default:
                 tempPassword = userInput;
-                StartCoroutine(webClient.Register(tempUsername, tempPassword, tempEmail, (success, response) =>
+                StartCoroutine(webClient.Register(user.username, tempPassword, tempEmail, (success, response) =>
                 {
                     if (success)
                     {
-                        TokenManager.SaveToken(response);
-                        UserInfoManager.SaveUserName(tempUsername);
+                        user = JsonUtility.FromJson<User>(response);
                         currentState = ConsoleState.Entering;
                         TypeText("Registration successful!", infoTextRef);
                         EnterGame();
@@ -237,6 +249,7 @@ public class ConsoleController : MonoBehaviour
                         currentState = ConsoleState.RegisterUserName;
                         terminalText.text = TerminalTexts.GetTerminalText(currentState);
                         TypeText(response, infoTextRef, "Enter you username:");
+                        consoleInput.contentType = TMP_InputField.ContentType.Standard;
                     }
                 }));
                 break;
@@ -250,7 +263,7 @@ public class ConsoleController : MonoBehaviour
         {
             if (success)
             {
-                TokenManager.SaveToken(response);
+                user = JsonUtility.FromJson<User>(response);
                 currentState = ConsoleState.Entering;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 TypeText("Guest account created!", infoTextRef);
@@ -259,15 +272,18 @@ public class ConsoleController : MonoBehaviour
             else
             {
                 TypeText(response, infoTextRef,"Guest account creation failed!");
+                currentState = ConsoleState.AuthMain;
+                terminalText.text = TerminalTexts.GetTerminalText(currentState);
             }
         }));
-        currentState = ConsoleState.MainMenu;
+        currentState = ConsoleState.AuthMain;
         terminalText.text = TerminalTexts.GetTerminalText(currentState);
     }
     
     private void EnterGame()
     {
-        StartCoroutine(webClient.UpdateUserStatus(tempUsername, UserStatus.ONLINE, (success, response) =>
+        UserInfoManager.SaveUserData(user);
+        StartCoroutine(webClient.UpdateUserStatus(user.username, UserStatus.ONLINE, (success, response) =>
         {
             if (success)
             {
@@ -276,6 +292,9 @@ public class ConsoleController : MonoBehaviour
             else
             {
                 TypeText(response, infoTextRef, "Failed to enter the game!");
+                currentState = ConsoleState.AuthMain;
+                terminalText.text = TerminalTexts.GetTerminalText(currentState);
+                consoleInput.contentType = TMP_InputField.ContentType.Standard;
             }
         }));
     }
@@ -317,7 +336,7 @@ public class ConsoleController : MonoBehaviour
     private void ExitCase()
     {
         TypeText("Exiting... Goodbye Commander!", infoTextRef);
-        StopCoroutine(webClient.UpdateUserStatus(tempUsername, UserStatus.OFFLINE, (success, response) =>
+        StopCoroutine(webClient.UpdateUserStatus(user.username, UserStatus.OFFLINE, (success, response) =>
         {
             if (!success)
             {
