@@ -5,7 +5,7 @@ public class GameSession
 {
     public string name;
     public string password;
-    public string sessionId;
+    public string id;
     public int maxPlayers;
     public int currentPlayers;
 }

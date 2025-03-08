@@ -2,21 +2,18 @@ using UnityEngine;
 
 using UnityEngine;
 
-public class UserInfoManager : MonoBehaviour
+public class UserInfoController : MonoBehaviour
 {
     [SerializeField] private UserInfo userInfoAsset;
     
     private static UserInfo userInfoInstance;
-    public static UserInfoManager Instance { get; private set; }
     
     private void Awake()
     {
-        if (Instance == null)
+        if (!userInfoInstance)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-
             userInfoInstance = userInfoAsset;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -49,31 +46,9 @@ public class UserInfoManager : MonoBehaviour
         userInfoInstance.Token = token;
     }
     
-    public static void SaveUserName(string username)
+    public static string GetUsername()
     {
-        if (!userInfoInstance)
-        {
-            Debug.LogError("UserInfo instance not initialized!");
-            return;
-        }
-        
-        userInfoInstance.Username = username;
-    }
-    
-    public static void SaveUserId(string userId)
-    {
-        if (!userInfoInstance)
-        {
-            Debug.LogError("UserInfo instance not initialized!");
-            return;
-        }
-        
-        userInfoInstance.UserId = userId;
-    }
-    
-    public static UserInfo GetUserInfo()
-    {
-        return userInfoInstance;
+        return userInfoInstance.Username;
     }
 
     public static string GetToken()

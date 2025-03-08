@@ -10,8 +10,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -54,12 +56,13 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     private String extractToken(ServerHttpRequest request) {
-        List<String> headers = request.getHeaders().get("Authorization");
-        if (headers != null && !headers.isEmpty()) {
-            String header = headers.getFirst();
-            if (header.startsWith("Bearer ")) {
-                return header.substring(7);
-            }
+        String token = UriComponentsBuilder.fromUri(request.getURI())
+                .build()
+                .getQueryParams()
+                .getFirst("token");
+
+        if (StringUtils.hasText(token)) {
+            return token;
         }
         return null;
     }

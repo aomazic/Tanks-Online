@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -40,7 +41,7 @@ public class WebClient : MonoBehaviour, IWebClient
         }
     }
     
-    public IEnumerator Register(string username, string password, string email, System.Action<bool, string> callback)
+    public IEnumerator Register(string username, string password, string email, System.Action<bool, User> callback)
     {
         var form = new WWWForm();
         form.AddField("username", username);
@@ -48,20 +49,21 @@ public class WebClient : MonoBehaviour, IWebClient
         form.AddField("email", email);
 
         using var request = UnityWebRequest.Post($"{BaseUrl}/auth/register", form);
-        
+    
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            callback(true, request.downloadHandler.text);
+            User user = JsonUtility.FromJson<User>(request.downloadHandler.text);
+            callback(true, user);
         }
         else
         {
-            callback(false, request.error);
+            callback(false, null);
         }
     }
     
-    public IEnumerator CheckUsername(string username, System.Action<bool, string> callback)
+    public IEnumerator CheckUsername(string username, Action<bool, string> callback)
     {
         using var request = UnityWebRequest.Get($"{BaseUrl}/auth/{username}");
 
@@ -85,36 +87,37 @@ public class WebClient : MonoBehaviour, IWebClient
         }
     }
     
-    public IEnumerator GuestRegister(System.Action<bool, string> callback)
+    public IEnumerator GuestRegister(Action<bool, User> callback)
     {
         using var request = UnityWebRequest.Post($"{BaseUrl}/auth/guest", new WWWForm());
-        
+    
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            callback(true, request.downloadHandler.text);
+            User user = JsonUtility.FromJson<User>(request.downloadHandler.text);
+            callback(true, user);
         }
         else
         {
-            callback(false, request.error);
+            callback(false, null);
         }
     }
     
-    public IEnumerator UpdateUserStatus(string username, UserStatus status, System.Action<bool, string> callback)
+    public IEnumerator UpdateUserStatus(string username, UserStatus status, Action<bool, string> callback)
     {
         var form = new WWWForm();
         form.AddField("newStatus", status.ToString());
 
         using var request = UnityWebRequest.Post($"{BaseUrl}/user/{username}/status", form);
 
-        if (!UserInfoManager.IsUserAuthenticated())
+        if (!UserInfoController.IsUserAuthenticated())
         {
             callback(false, "No token available. Please log in.");
             yield break;
         }
 
-        request.SetRequestHeader("Authorization", $"Bearer {UserInfoManager.GetToken()}");
+        request.SetRequestHeader("Authorization", $"Bearer {UserInfoController.GetToken()}");
         request.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
         yield return request.SendWebRequest();
@@ -129,18 +132,18 @@ public class WebClient : MonoBehaviour, IWebClient
         }
     }
     
-    public IEnumerator GetWaitingGameSessions(int page, int size, System.Action<bool, string> callback)
+    public IEnumerator GetWaitingGameSessions(int page, int size, Action<bool, string> callback)
     {
         string url = $"{BaseUrl}/game-sessions/status/WAITING?page={page}&size={size}";
         using var request = UnityWebRequest.Get(url);
 
-        if (!UserInfoManager.IsUserAuthenticated())
+        if (!UserInfoController.IsUserAuthenticated())
         {
             callback(false, "No token available. Please log in.");
             yield break;
         }
 
-        request.SetRequestHeader("Authorization", $"Bearer {UserInfoManager.GetToken()}");
+        request.SetRequestHeader("Authorization", $"Bearer {UserInfoController.GetToken()}");
 
         yield return request.SendWebRequest();
 
@@ -154,7 +157,7 @@ public class WebClient : MonoBehaviour, IWebClient
         }
     }
     
-    public IEnumerator CreateGameSession(string name, string password, System.Action<bool, GameSession> callback)
+    public IEnumerator CreateGameSession(string name, string password, Action<bool, GameSession> callback)
     {
         var form = new WWWForm();
         form.AddField("name", name);
@@ -168,13 +171,13 @@ public class WebClient : MonoBehaviour, IWebClient
         
         request.SetRequestHeader("Content-Type", "application/json");
     
-        if (!UserInfoManager.IsUserAuthenticated())
+        if (!UserInfoController.IsUserAuthenticated())
         {
             callback(false, null);
             yield break;
         }
     
-        request.SetRequestHeader("Authorization", $"Bearer {UserInfoManager.GetToken()}");
+        request.SetRequestHeader("Authorization", $"Bearer {UserInfoController.GetToken()}");
     
         // Construct the JSON payload
         string jsonPayload = $"{{\"name\":\"{name}\",\"password\":\"{password}\"}}";

@@ -235,11 +235,11 @@ public class ConsoleController : MonoBehaviour
                 break;
             default:
                 tempPassword = userInput;
-                StartCoroutine(webClient.Register(user.username, tempPassword, tempEmail, (success, response) =>
+                StartCoroutine(webClient.Register(user.username, tempPassword, tempEmail, (success, userResponse) =>
                 {
                     if (success)
                     {
-                        user = JsonUtility.FromJson<User>(response);
+                        user = userResponse;
                         currentState = ConsoleState.Entering;
                         TypeText("Registration successful!", infoTextRef);
                         EnterGame();
@@ -248,7 +248,7 @@ public class ConsoleController : MonoBehaviour
                     {
                         currentState = ConsoleState.RegisterUserName;
                         terminalText.text = TerminalTexts.GetTerminalText(currentState);
-                        TypeText(response, infoTextRef, "Enter you username:");
+                        TypeText(userResponse.ToString(), infoTextRef, "Enter you username:");
                         consoleInput.contentType = TMP_InputField.ContentType.Standard;
                     }
                 }));
@@ -259,11 +259,12 @@ public class ConsoleController : MonoBehaviour
     private void HandleGuestRegister()
     {
         consoleInput.text = "";
-        StartCoroutine(webClient.GuestRegister((success, response) =>
+        
+        StartCoroutine(webClient.GuestRegister((success, userResponse) =>
         {
             if (success)
             {
-                user = JsonUtility.FromJson<User>(response);
+                user = userResponse; 
                 currentState = ConsoleState.Entering;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
                 TypeText("Guest account created!", infoTextRef);
@@ -271,7 +272,7 @@ public class ConsoleController : MonoBehaviour
             }
             else
             {
-                TypeText(response, infoTextRef,"Guest account creation failed!");
+                TypeText(userResponse.ToString(), infoTextRef, "Guest account creation failed!");
                 currentState = ConsoleState.AuthMain;
                 terminalText.text = TerminalTexts.GetTerminalText(currentState);
             }
@@ -282,7 +283,7 @@ public class ConsoleController : MonoBehaviour
     
     private void EnterGame()
     {
-        UserInfoManager.SaveUserData(user);
+        UserInfoController.SaveUserData(user);
         StartCoroutine(webClient.UpdateUserStatus(user.username, UserStatus.ONLINE, (success, response) =>
         {
             if (success)
