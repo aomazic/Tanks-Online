@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52da448ef65242942b50976a6dcff8af, type: 3}
   m_Name: GameSessionData
   m_EditorClassIdentifier: 
-  sessionId: 
-  sessionName: 
+  sessionId: 1
+  sessionName: test
+  sessionPassword: test

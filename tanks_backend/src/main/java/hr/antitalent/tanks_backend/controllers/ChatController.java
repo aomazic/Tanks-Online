@@ -1,19 +1,28 @@
 package hr.antitalent.tanks_backend.controllers;
 
 import hr.antitalent.tanks_backend.models.ChatMessage;
+import hr.antitalent.tanks_backend.services.ChatMessageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
+    private final ChatMessageService chatMessageService;
 
     @MessageMapping("/chat.sendMessage/{sessionId}")
     public void sendMessage(
@@ -28,6 +37,10 @@ public class ChatController {
             }
         }
 
+        // Store message in memory
+        chatMessageService.addMessage(sessionId, chatMessage);
+
+        // Broadcast to all subscribers
         messagingTemplate.convertAndSend(String.format("/topic/chat/%s", sessionId), chatMessage);
     }
 
@@ -36,12 +49,21 @@ public class ChatController {
             @DestinationVariable String sessionId,
             @Payload ChatMessage chatMessage,
             SimpMessageHeaderAccessor headerAccessor) {
-        
+
         if (headerAccessor.getSessionAttributes() != null) {
             headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
             headerAccessor.getSessionAttributes().put("sessionId", sessionId);
         }
 
+        // Store join message
+        chatMessageService.addMessage(sessionId, chatMessage);
+
+        // Send join notification
         messagingTemplate.convertAndSend(String.format("/topic/chat/%s", sessionId), chatMessage);
+    }
+
+    @GetMapping("/api/chat/{sessionId}")
+    public ResponseEntity<List<ChatMessage>> getChatHistory(@PathVariable String sessionId) {
+        return ResponseEntity.ok(chatMessageService.getSessionMessages(sessionId));
     }
 }

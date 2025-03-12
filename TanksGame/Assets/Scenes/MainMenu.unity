@@ -5219,6 +5219,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b3a75756d35b2499de094942ed08ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chatInputField: {fileID: 37421292}
+  messagePrefab: {fileID: 8830973665471698441, guid: dd772415ee954674daea518dc3c11216,
+    type: 3}
+  chatScrollRect: {fileID: 1756630052}
+  chatContentTransform: {fileID: 1476722147}
 --- !u!1 &1824611354
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,10 +11,15 @@ public class WebSocketController : MonoBehaviour
     
     // Callback event for receiving messages
     public event Action<ChatMessage> OnChatMessageReceived;
-    public event Action<ChatMessage> OnUserJoined;
     public event Action OnConnectionOpened;
     public event Action<string> OnConnectionError;
     public event Action OnConnectionClosed;
+    
+    private bool isConnected;
+    private const string STOMP_CONNECT_FRAME = "CONNECT\n" +
+                                               "accept-version:1.1,1.0\n" +
+                                               "heart-beat:10000,10000\n\n\0";
+    private const string STOMP_DISCONNECT_FRAME = "DISCONNECT\n\n\0";
     
     private void Awake()
     {
@@ -27,61 +32,85 @@ public class WebSocketController : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
-    
-    public async void ConnectToChat()
+    public async Task ConnectToChat()
     {
         if (websocket != null)
         {
             await DisconnectFromChat();
         }
-        
+
         if (!UserInfoController.IsUserAuthenticated())
         {
             Debug.LogError("User not authenticated. Cannot connect to chat.");
             return;
         }
-        
+
         var token = UserInfoController.GetToken();
         websocket = new WebSocket($"{BaseUrl}?token={token}");
 
-        websocket.OnOpen += () =>
+        websocket.OnOpen += async () =>
         {
             Debug.Log("WebSocket connection opened");
+            isConnected = true;
+
+            // Send STOMP connection frame
+            await SendStompConnect();
+
             OnConnectionOpened?.Invoke();
-            
+
             var sessionId = GameSessionController.GetSessionData().sessionId;
-            if (!string.IsNullOrEmpty(sessionId))
+            if (string.IsNullOrEmpty(sessionId))
             {
-                JoinChat(sessionId, UserInfoController.GetUsername());
+                return;
             }
+    
+            await SubscribeToTopic(sessionId);
+            await JoinChat(sessionId, UserInfoController.GetUsername());
         };
 
         websocket.OnError += (e) =>
         {
             Debug.LogError($"WebSocket Error: {e}");
+            isConnected = false;
             OnConnectionError?.Invoke(e);
         };
 
         websocket.OnClose += (e) =>
         {
             Debug.Log("WebSocket connection closed");
+            isConnected = false;
             OnConnectionClosed?.Invoke();
         };
 
         websocket.OnMessage += (bytes) =>
         {
             var message = System.Text.Encoding.UTF8.GetString(bytes);
-            Debug.Log($"WebSocket message received: {message}");
             
-            var chatMessage = JsonUtility.FromJson<ChatMessage>(message);
-            
-            if (chatMessage.type == "JOIN")
+            if (message.StartsWith("CONNECTED") || message.StartsWith("RECEIPT"))
             {
-                OnUserJoined?.Invoke(chatMessage);
+                Debug.Log("STOMP protocol message received");
+                return;
             }
-            else
+
+            if (message.StartsWith("MESSAGE"))
             {
-                OnChatMessageReceived?.Invoke(chatMessage);
+                var bodyIndex = message.IndexOf("\n\n", StringComparison.Ordinal);
+                if (bodyIndex == -1)
+                    return;
+    
+                var body = message[(bodyIndex + 2)..].TrimEnd('\0');
+                ProcessChatMessage(body);
+                return;
+            }
+
+            // Try to process as direct JSON (fallback)
+            try
+            {
+                ProcessChatMessage(message);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to process message: {ex.Message}");
             }
         };
 
@@ -96,18 +125,21 @@ public class WebSocketController : MonoBehaviour
         }
     }
     
-    public async Task DisconnectFromChat()
+    private void ProcessChatMessage(string jsonMessage)
     {
-        if (websocket?.State == WebSocketState.Open)
+        try
+        { 
+            OnChatMessageReceived?.Invoke(JsonUtility.FromJson<ChatMessage>(jsonMessage));
+        }
+        catch (Exception ex)
         {
-            await websocket.Close();
-            websocket = null;
+            Debug.LogError($"Error processing chat message: {ex.Message}");
         }
     }
     
-    public async void SendMessage(string content)
+    public async Task SendStompMessage(string content)
     {
-        if (websocket?.State != WebSocketState.Open)
+        if (websocket?.State != WebSocketState.Open || !isConnected)
         {
             Debug.LogError("WebSocket not connected. Cannot send message.");
             return;
@@ -132,20 +164,56 @@ public class WebSocketController : MonoBehaviour
         var destination = $"/app/chat.sendMessage/{sessionId}";
         
         // Create STOMP-formatted message
-        var stompMessage = $"SEND\ndestination:{destination}\ncontent-type:application/json\n\n{json}\0";
+        var stompMessage = "SEND\n" +
+                           $"destination:{destination}\n" +
+                           "content-type:application/json\n\n" +
+                           $"{json}\0";
         
         await websocket.SendText(stompMessage);
     }
     
-    public async void JoinChat(string sessionId, string username)
+    private async Task SendStompConnect()
     {
-        if (websocket?.State != WebSocketState.Open)
+        await websocket.SendText(STOMP_CONNECT_FRAME);
+    }
+    
+    private async Task SubscribeToTopic(string sessionId)
+    {
+        var destination = $"/topic/chat/{sessionId}";
+        
+        var subscribeFrame = "SUBSCRIBE\n" +  
+                                   "id:sub-0\n" + 
+                                   $"destination:{destination}\n\n\0";
+        
+        await websocket.SendText(subscribeFrame);
+        Debug.Log($"Subscribed to topic: {destination}");
+    }
+    
+    private async Task DisconnectFromChat()
+    {
+        if (isConnected && websocket?.State == WebSocketState.Open)
+        {
+            // Send STOMP disconnect frame
+            await websocket.SendText(STOMP_DISCONNECT_FRAME);
+        }
+        
+        if (websocket != null)
+        {
+            await websocket.Close();
+            websocket = null;
+            isConnected = false;
+        }
+    }
+    
+    private async Task JoinChat(string sessionId, string username)
+    {
+        if (websocket?.State != WebSocketState.Open || !isConnected)
         {
             Debug.LogError("WebSocket not connected. Cannot join chat.");
             return;
         }
         
-        ChatMessage chatMessage = new ChatMessage
+        var chatMessage = new ChatMessage
         {
             content = $"{username} joined the chat",
             sender = username,
@@ -157,12 +225,15 @@ public class WebSocketController : MonoBehaviour
         var destination = $"/app/chat.join/{sessionId}";
         
         // Create STOMP-formatted message
-        var stompMessage = $"SEND\ndestination:{destination}\ncontent-type:application/json\n\n{json}\0";
+        var stompMessage = "SEND\n" +
+                           $"destination:{destination}\n" +
+                           "content-type:application/json\n\n" +
+                           $"{json}\0";
         
         await websocket.SendText(stompMessage);
     }
     
-    void Update()
+    private void Update()
     {
         #if !UNITY_WEBGL || UNITY_EDITOR
             websocket?.DispatchMessageQueue();
@@ -173,4 +244,4 @@ public class WebSocketController : MonoBehaviour
     {
         _ = DisconnectFromChat();
     }
-} 
+}
