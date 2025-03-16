@@ -40,11 +40,7 @@ public class GameSession {
     private LocalDateTime startTime;
     
     private LocalDateTime endTime;
-
-    @Type(JsonBinaryType.class)
-    @Column(columnDefinition = "jsonb")
-    private String gameSettings;
-
+    
     @Type(JsonBinaryType.class)
     @Column(columnDefinition = "jsonb")
     private String summary;
@@ -59,8 +55,4 @@ public class GameSession {
     @OneToMany(mappedBy = "gameSession", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<GameSessionPlayer> players;
-
-    @OneToMany(mappedBy = "gameSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<GameEvent> events;
 }

@@ -94,32 +94,6 @@ public class GameSessionController {
     }
 
     /**
-     * Update game session settings.
-     *
-     * @param gameSessionId   The ID of the game session.
-     * @param newGameSettings New settings for the game.
-     * @return ResponseEntity with updated GameSession.
-     */
-    @PutMapping("/{gameSessionId}/settings")
-    public ResponseEntity<GameSession> updateGameSessionSettings(
-            @PathVariable Long gameSessionId,
-            @RequestParam String newGameSettings
-    ) {
-        log.info("Updating game session settings. ID: {}, New settings: {}",
-                gameSessionId, newGameSettings);
-
-        try {
-            GameSession gameSession = gameSessionService.updateGameSessionSettings(gameSessionId, newGameSettings);
-            log.info("Game session settings updated. ID: {}, Name: '{}'",
-                    gameSession.getId(), gameSession.getName());
-            return ResponseEntity.ok(gameSession);
-        } catch (IllegalArgumentException e) {
-            log.error("Failed to update settings for game session {}: {}", gameSessionId, e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    /**
      * Get a game session by name.
      *
      * @param gameSessionName The name of the game session.

@@ -69,15 +69,7 @@ public class GameSessionService {
 
         return gameSessionRepository.save(gameSession);
     }
-
-    @Transactional
-    public GameSession updateGameSessionSettings(Long gameSessionId, String newGameSettings) {
-        GameSession gameSession = gameSessionRepository.findById(gameSessionId)
-                .orElseThrow(() -> new IllegalArgumentException(GAME_SESSION_NOT_FOUND));
-        gameSession.setGameSettings(newGameSettings);
-        return gameSessionRepository.save(gameSession);
-    }
-
+    
     @Cacheable(cacheNames = FIFTEEN_MINUTE_CACHE, cacheManager = "fifteenMinutesCacheManager", key = "#gameSessionName")
     public GameSession findGameSessionByName(String gameSessionName) {
         return gameSessionRepository.findByName(gameSessionName)

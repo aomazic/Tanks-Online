@@ -1,9 +1,7 @@
-﻿package hr.antitalent.tanks_backend.services;
+package hr.antitalent.tanks_backend.services;
 
 import hr.antitalent.tanks_backend.domain.GameEvent;
-import hr.antitalent.tanks_backend.domain.GameSession;
 import hr.antitalent.tanks_backend.repositories.GameEventRepository;
-import hr.antitalent.tanks_backend.repositories.GameSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,20 +11,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GameEventService {
     private final GameEventRepository gameEventRepository;
-    private final GameSessionRepository gameSessionRepository;
 
-    public GameEvent saveGameEvent(GameEvent gameEvent, String sessionId) {
-        GameSession gameSession = gameSessionRepository.findByName(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Game session not found: %s", sessionId)));
-
-        gameEvent.setGameSession(gameSession);
+    public GameEvent saveGameEvent(GameEvent gameEvent, Long sessionId) {
+        gameEvent.setGameSessionId(sessionId);
         return gameEventRepository.save(gameEvent);
     }
 
-    public List<GameEvent> findEventsBySessionId(String sessionId) {
-        GameSession gameSession = gameSessionRepository.findByName(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Game session not found: %s", sessionId)));
-
-        return gameEventRepository.findByGameSessionOrderByEventTimestampDesc(gameSession);
+    public List<GameEvent> findEventsBySessionId(Long sessionId) {
+        return gameEventRepository.findByGameSessionIdOrderByEventTimeDesc(sessionId);
     }
 }

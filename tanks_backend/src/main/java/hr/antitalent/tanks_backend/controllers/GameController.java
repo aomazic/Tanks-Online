@@ -1,4 +1,4 @@
-﻿package hr.antitalent.tanks_backend.controllers;
+package hr.antitalent.tanks_backend.controllers;
 
 import hr.antitalent.tanks_backend.domain.GameEvent;
 import hr.antitalent.tanks_backend.services.GameEventService;
@@ -86,7 +86,7 @@ public class GameController {
 
     @PostMapping("/api/game-sessions/{sessionId}/events")
     public ResponseEntity<GameEvent> createGameEvent(
-            @PathVariable String sessionId,
+            @PathVariable Long sessionId,
             @RequestBody GameEvent gameEvent) {
         log.info("Creating game event for session: {}", sessionId);
         try {
@@ -99,7 +99,7 @@ public class GameController {
     }
 
     @GetMapping("/api/game-sessions/{sessionId}/events")
-    public ResponseEntity<List<GameEvent>> getGameEvents(@PathVariable String sessionId) {
+    public ResponseEntity<List<GameEvent>> getGameEvents(@PathVariable Long sessionId) {
         log.info("Fetching game events for session: {}", sessionId);
         try {
             List<GameEvent> events = gameEventService.findEventsBySessionId(sessionId);

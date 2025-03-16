@@ -1,4 +1,4 @@
-﻿package hr.antitalent.tanks_backend.websocket.game;
+package hr.antitalent.tanks_backend.websocket.game;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
