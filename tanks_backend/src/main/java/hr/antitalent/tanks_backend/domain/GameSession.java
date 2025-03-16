@@ -24,6 +24,9 @@ public class GameSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private Long hostId;
+
     @Column(unique = true, nullable = false)
     private String name;
 

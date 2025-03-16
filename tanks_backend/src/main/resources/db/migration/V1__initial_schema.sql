@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS game.user_stats (
 
 CREATE TABLE IF NOT EXISTS game.game_session (
                                                  id             BIGSERIAL PRIMARY KEY,
+                                                 host_id bigint,
                                                  name           varchar UNIQUE NOT NULL,
                                                  password       varchar,
                                          max_players integer,

@@ -1,9 +1,9 @@
 package hr.antitalent.tanks_backend.services;
 
+import hr.antitalent.tanks_backend.domain.GameSession;
 import hr.antitalent.tanks_backend.dto.game.GameSessionCreateDTO;
 import hr.antitalent.tanks_backend.dto.game.GameSessionUpdateDTO;
 import hr.antitalent.tanks_backend.enums.GameSessionStatus;
-import hr.antitalent.tanks_backend.domain.GameSession;
 import hr.antitalent.tanks_backend.repositories.GameSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -34,6 +34,7 @@ public class GameSessionService {
 
         GameSession gameSession = GameSession.builder()
                 .name(dto.name())
+                .hostId(dto.hostId())
                 .password(dto.password())
                 .status(GameSessionStatus.WAITING)
                 .build();
@@ -57,7 +58,6 @@ public class GameSessionService {
 
         gameSession.setStatus(GameSessionStatus.FINISHED);
         gameSession.setEndTime(LocalDateTime.now());
-        gameSession.setWinningTeam(dto.winningTeam());
         
 
         if (dto.summary() != null && !dto.summary().isBlank()) {

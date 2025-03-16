@@ -1,8 +1,8 @@
 package hr.antitalent.tanks_backend.services;
 
-import hr.antitalent.tanks_backend.dto.game.GameSessionPlayerUpdateDTO;
 import hr.antitalent.tanks_backend.domain.GameSession;
 import hr.antitalent.tanks_backend.domain.GameSessionPlayer;
+import hr.antitalent.tanks_backend.dto.game.GameSessionPlayerUpdateDTO;
 import hr.antitalent.tanks_backend.repositories.GameSessionPlayerRepository;
 import hr.antitalent.tanks_backend.repositories.GameSessionRepository;
 import hr.antitalent.tanks_backend.repositories.UserRepository;
@@ -37,7 +37,6 @@ public class GameSessionPlayerService {
                 .gameSession(gameSession)
                 .player(userRepository.findById(userId)
                         .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND)))
-                .team("none")
                 .kills(0)
                 .deaths(0)
                 .build();
@@ -61,7 +60,6 @@ public class GameSessionPlayerService {
         GameSessionPlayer player = gameSessionPlayerRepository.findById(playerId)
                 .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND));
 
-        player.setTeam(dto.team());
         player.setKills(dto.kills());
         player.setDeaths(dto.deaths());
 

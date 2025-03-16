@@ -1,27 +1,27 @@
 package hr.antitalent.tanks_backend.controllers;
 
+import hr.antitalent.tanks_backend.domain.GameSession;
 import hr.antitalent.tanks_backend.dto.game.GameSessionCreateDTO;
 import hr.antitalent.tanks_backend.dto.game.GameSessionUpdateDTO;
 import hr.antitalent.tanks_backend.enums.GameSessionStatus;
-import hr.antitalent.tanks_backend.domain.GameSession;
 import hr.antitalent.tanks_backend.services.GameSessionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+
 @RestController
 @RequestMapping("/api/game-sessions")
 @RequiredArgsConstructor
+@Slf4j
 public class GameSessionController {
     private final GameSessionService gameSessionService;
-
-    private static final Logger logger = LoggerFactory.getLogger(GameSessionController.class);
 
     /**
      * Create a new game session.
@@ -31,11 +31,16 @@ public class GameSessionController {
      */
     @PostMapping
     public ResponseEntity<GameSession> createGameSession(@Valid @RequestBody GameSessionCreateDTO dto) {
+        log.info("Creating game session. Name: '{}', Creator ID: {}",
+                dto.name(), dto.hostId());
+
         try {
             GameSession gameSession = gameSessionService.createGameSession(dto);
+            log.info("Game session created successfully. ID: {}, Name: '{}', Status: {}",
+                    gameSession.getId(), gameSession.getName(), gameSession.getStatus());
             return new ResponseEntity<>(gameSession, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            logger.error("Error creating game session: {}", e.getMessage());
+            log.error("Failed to create game session '{}': {}", dto.name(), e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -48,11 +53,16 @@ public class GameSessionController {
      */
     @PutMapping("/{gameSessionId}/start")
     public ResponseEntity<GameSession> startGameSession(@PathVariable Long gameSessionId) {
+        log.info("Starting game session. ID: {}", gameSessionId);
+
         try {
             GameSession gameSession = gameSessionService.startGameSession(gameSessionId);
+            log.info("Game session started. ID: {}, Name: '{}', Players: {}",
+                    gameSession.getId(), gameSession.getName(),
+                    gameSession.getPlayers() != null ? gameSession.getPlayers().size() : 0);
             return ResponseEntity.ok(gameSession);
         } catch (IllegalArgumentException e) {
-            logger.error("Error starting game session: {}", e.getMessage());
+            log.error("Failed to start game session {}: {}", gameSessionId, e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
@@ -69,11 +79,16 @@ public class GameSessionController {
             @PathVariable Long gameSessionId,
             @Valid @RequestBody GameSessionUpdateDTO dto
     ) {
+        log.info("Ending game session. ID: {}", gameSessionId);
+
         try {
             GameSession gameSession = gameSessionService.endGameSession(gameSessionId, dto);
+            log.info("Game session ended. ID: {}, Name: '{}', Duration: {} seconds",
+                    gameSession.getId(), gameSession.getName(),
+                    Duration.between(gameSession.getStartTime(), gameSession.getEndTime()).getSeconds());
             return ResponseEntity.ok(gameSession);
         } catch (IllegalArgumentException e) {
-            logger.error("Error ending game session: {}", e.getMessage());
+            log.error("Failed to end game session {}: {}", gameSessionId, e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
@@ -90,11 +105,16 @@ public class GameSessionController {
             @PathVariable Long gameSessionId,
             @RequestParam String newGameSettings
     ) {
+        log.info("Updating game session settings. ID: {}, New settings: {}",
+                gameSessionId, newGameSettings);
+
         try {
             GameSession gameSession = gameSessionService.updateGameSessionSettings(gameSessionId, newGameSettings);
+            log.info("Game session settings updated. ID: {}, Name: '{}'",
+                    gameSession.getId(), gameSession.getName());
             return ResponseEntity.ok(gameSession);
         } catch (IllegalArgumentException e) {
-            logger.error("Error updating game session settings: {}", e.getMessage());
+            log.error("Failed to update settings for game session {}: {}", gameSessionId, e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
@@ -107,11 +127,16 @@ public class GameSessionController {
      */
     @GetMapping("/{gameSessionName}")
     public ResponseEntity<GameSession> getGameSessionByName(@PathVariable String gameSessionName) {
+        log.debug("Fetching game session by name: '{}'", gameSessionName);
+
         try {
             GameSession gameSession = gameSessionService.findGameSessionByName(gameSessionName);
+            log.debug("Found game session. Name: '{}', Status: {}, Players: {}",
+                    gameSession.getName(), gameSession.getStatus(),
+                    gameSession.getPlayers() != null ? gameSession.getPlayers().size() : 0);
             return ResponseEntity.ok(gameSession);
         } catch (IllegalArgumentException e) {
-            logger.error("Game session not found: {}", e.getMessage());
+            log.warn("Game session not found: '{}'", gameSessionName);
             return ResponseEntity.notFound().build();
         }
     }
@@ -128,7 +153,12 @@ public class GameSessionController {
             @PathVariable GameSessionStatus status,
             Pageable pageable
     ) {
+        log.debug("Fetching game sessions by status: {}, Page: {}, Size: {}",
+                status, pageable.getPageNumber(), pageable.getPageSize());
+
         Page<GameSession> gameSessions = gameSessionService.findGameSessionsByStatus(status, pageable);
+        log.debug("Found {} game sessions with status: {}",
+                gameSessions.getTotalElements(), status);
         return ResponseEntity.ok(gameSessions);
     }
 
@@ -140,7 +170,11 @@ public class GameSessionController {
      */
     @GetMapping
     public ResponseEntity<Page<GameSession>> getAllGameSessions(Pageable pageable) {
+        log.debug("Fetching all game sessions. Page: {}, Size: {}",
+                pageable.getPageNumber(), pageable.getPageSize());
+
         Page<GameSession> gameSessions = gameSessionService.findAllGameSessions(pageable);
+        log.debug("Found {} total game sessions", gameSessions.getTotalElements());
         return ResponseEntity.ok(gameSessions);
     }
 
@@ -152,11 +186,14 @@ public class GameSessionController {
      */
     @DeleteMapping("/{gameSessionId}")
     public ResponseEntity<Void> deleteGameSession(@PathVariable Long gameSessionId) {
+        log.info("Deleting game session. ID: {}", gameSessionId);
+
         try {
             gameSessionService.deleteGameSession(gameSessionId);
+            log.info("Game session deleted successfully. ID: {}", gameSessionId);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
-            logger.error("Error deleting game session: {}", e.getMessage());
+            log.error("Failed to delete game session {}: {}", gameSessionId, e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
