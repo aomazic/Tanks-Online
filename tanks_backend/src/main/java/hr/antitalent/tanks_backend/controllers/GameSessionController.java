@@ -1,9 +1,9 @@
 package hr.antitalent.tanks_backend.controllers;
 
-import hr.antitalent.tanks_backend.dto.GameSessionCreateDTO;
-import hr.antitalent.tanks_backend.dto.GameSessionUpdateDTO;
+import hr.antitalent.tanks_backend.dto.game.GameSessionCreateDTO;
+import hr.antitalent.tanks_backend.dto.game.GameSessionUpdateDTO;
 import hr.antitalent.tanks_backend.enums.GameSessionStatus;
-import hr.antitalent.tanks_backend.models.GameSession;
+import hr.antitalent.tanks_backend.domain.GameSession;
 import hr.antitalent.tanks_backend.services.GameSessionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package hr.antitalent.tanks_backend.models;
+package hr.antitalent.tanks_backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import hr.antitalent.tanks_backend.enums.GameSessionStatus;
@@ -37,8 +37,6 @@ public class GameSession {
     private LocalDateTime startTime;
     
     private LocalDateTime endTime;
-    
-    private String winningTeam;
 
     @Type(JsonBinaryType.class)
     @Column(columnDefinition = "jsonb")

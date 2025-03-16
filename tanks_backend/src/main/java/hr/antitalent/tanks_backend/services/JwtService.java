@@ -1,6 +1,6 @@
 package hr.antitalent.tanks_backend.services;
 
-import hr.antitalent.tanks_backend.models.User;
+import hr.antitalent.tanks_backend.domain.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

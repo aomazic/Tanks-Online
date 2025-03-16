@@ -1,6 +1,6 @@
 package hr.antitalent.tanks_backend.services;
 
-import hr.antitalent.tanks_backend.models.ChatMessage;
+import hr.antitalent.tanks_backend.websocket.chat.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,9 +1,9 @@
 package hr.antitalent.tanks_backend.services;
 
-import hr.antitalent.tanks_backend.dto.AuthResponse;
+import hr.antitalent.tanks_backend.dto.auth.AuthResponse;
 import hr.antitalent.tanks_backend.enums.UserRole;
 import hr.antitalent.tanks_backend.enums.UserStatus;
-import hr.antitalent.tanks_backend.models.User;
+import hr.antitalent.tanks_backend.domain.User;
 import hr.antitalent.tanks_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;

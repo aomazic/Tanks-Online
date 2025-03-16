@@ -1,7 +1,7 @@
 package hr.antitalent.tanks_backend.services;
 
 import hr.antitalent.tanks_backend.enums.UserStatus;
-import hr.antitalent.tanks_backend.models.User;
+import hr.antitalent.tanks_backend.domain.User;
 import hr.antitalent.tanks_backend.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

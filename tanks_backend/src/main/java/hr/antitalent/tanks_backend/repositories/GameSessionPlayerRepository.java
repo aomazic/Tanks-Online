@@ -1,6 +1,6 @@
 package hr.antitalent.tanks_backend.repositories;
 
-import hr.antitalent.tanks_backend.models.GameSessionPlayer;
+import hr.antitalent.tanks_backend.domain.GameSessionPlayer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

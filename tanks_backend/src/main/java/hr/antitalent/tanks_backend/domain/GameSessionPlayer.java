@@ -1,40 +1,41 @@
-package hr.antitalent.tanks_backend.models;
+package hr.antitalent.tanks_backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import hr.antitalent.tanks_backend.enums.GameEventType;
-import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "game_events", schema = "game")
+@Table(name = "game_session_player", schema = "game")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GameEvent {
+public class GameSessionPlayer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "player_id", referencedColumnName = "id")
+    @JsonBackReference
+    private User player;
 
     @ManyToOne
     @JoinColumn(name = "game_session_id", referencedColumnName = "id")
     @JsonBackReference
     private GameSession gameSession;
 
-    @Enumerated(EnumType.STRING)
-    private GameEventType eventType;
+    private Integer kills = 0;
+    private Integer deaths = 0;
 
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDateTime eventTime;
+    private LocalDateTime joinedAt;
 
-    @Type(JsonBinaryType.class)
-    @Column(columnDefinition = "jsonb")
-    private String summary;
+    @Column(updatable = false)
+    private LocalDateTime leftAt;
 }

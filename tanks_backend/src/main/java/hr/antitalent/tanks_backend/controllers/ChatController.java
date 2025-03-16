@@ -1,6 +1,6 @@
 package hr.antitalent.tanks_backend.controllers;
 
-import hr.antitalent.tanks_backend.models.ChatMessage;
+import hr.antitalent.tanks_backend.websocket.chat.ChatMessage;
 import hr.antitalent.tanks_backend.services.ChatMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +24,10 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageService chatMessageService;
 
+    private static final String CHAT_TOPIC_TEMPLATE = "/topic/chat/%s";
+    private static final String USERNAME_ATTR = "username";
+    private static final String SESSION_ID_ATTR = "sessionId";
+
     @MessageMapping("/chat.sendMessage/{sessionId}")
     public void sendMessage(
             @DestinationVariable String sessionId,
@@ -31,17 +35,14 @@ public class ChatController {
             SimpMessageHeaderAccessor headerAccessor) {
 
         if (headerAccessor.getSessionAttributes() != null) {
-            String username = (String) headerAccessor.getSessionAttributes().get("username");
-            if (username != null) {
-                chatMessage.setSender(username);
-            }
+            chatMessage.setSender((String) headerAccessor.getSessionAttributes().get(USERNAME_ATTR));
         }
-
+        
         // Store message in memory
         chatMessageService.addMessage(sessionId, chatMessage);
 
         // Broadcast to all subscribers
-        messagingTemplate.convertAndSend(String.format("/topic/chat/%s", sessionId), chatMessage);
+        messagingTemplate.convertAndSend(String.format(CHAT_TOPIC_TEMPLATE, sessionId), chatMessage);
     }
 
     @MessageMapping("/chat.join/{sessionId}")
@@ -51,15 +52,17 @@ public class ChatController {
             SimpMessageHeaderAccessor headerAccessor) {
 
         if (headerAccessor.getSessionAttributes() != null) {
-            headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-            headerAccessor.getSessionAttributes().put("sessionId", sessionId);
+            headerAccessor.getSessionAttributes().put(USERNAME_ATTR, chatMessage.getSender());
+            headerAccessor.getSessionAttributes().put(SESSION_ID_ATTR, sessionId);
         }
 
+        log.info("User joined chat session: {}", sessionId);
+        
         // Store join message
         chatMessageService.addMessage(sessionId, chatMessage);
 
         // Send join notification
-        messagingTemplate.convertAndSend(String.format("/topic/chat/%s", sessionId), chatMessage);
+        messagingTemplate.convertAndSend(String.format(CHAT_TOPIC_TEMPLATE, sessionId), chatMessage);
     }
 
     @GetMapping("/api/chat/{sessionId}")

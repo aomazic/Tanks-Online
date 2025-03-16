@@ -1,8 +1,8 @@
 package hr.antitalent.tanks_backend.controllers;
 
-import hr.antitalent.tanks_backend.dto.AuthRequest;
-import hr.antitalent.tanks_backend.dto.AuthResponse;
-import hr.antitalent.tanks_backend.dto.RegistrationRequest;
+import hr.antitalent.tanks_backend.dto.auth.AuthRequest;
+import hr.antitalent.tanks_backend.dto.auth.AuthResponse;
+import hr.antitalent.tanks_backend.dto.auth.RegistrationRequest;
 import hr.antitalent.tanks_backend.services.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

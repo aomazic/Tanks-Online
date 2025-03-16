@@ -1,6 +1,5 @@
-package hr.antitalent.tanks_backend.models;
+package hr.antitalent.tanks_backend.domain;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import hr.antitalent.tanks_backend.enums.UserRole;
 import hr.antitalent.tanks_backend.enums.UserStatus;
 import jakarta.persistence.*;

@@ -1,7 +1,7 @@
 package hr.antitalent.tanks_backend.controllers;
 
 import hr.antitalent.tanks_backend.enums.UserStatus;
-import hr.antitalent.tanks_backend.models.User;
+import hr.antitalent.tanks_backend.domain.User;
 import hr.antitalent.tanks_backend.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

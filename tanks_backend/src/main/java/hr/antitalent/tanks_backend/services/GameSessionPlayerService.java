@@ -1,8 +1,8 @@
 package hr.antitalent.tanks_backend.services;
 
-import hr.antitalent.tanks_backend.dto.GameSessionPlayerUpdateDTO;
-import hr.antitalent.tanks_backend.models.GameSession;
-import hr.antitalent.tanks_backend.models.GameSessionPlayer;
+import hr.antitalent.tanks_backend.dto.game.GameSessionPlayerUpdateDTO;
+import hr.antitalent.tanks_backend.domain.GameSession;
+import hr.antitalent.tanks_backend.domain.GameSessionPlayer;
 import hr.antitalent.tanks_backend.repositories.GameSessionPlayerRepository;
 import hr.antitalent.tanks_backend.repositories.GameSessionRepository;
 import hr.antitalent.tanks_backend.repositories.UserRepository;

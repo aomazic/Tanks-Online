@@ -1,4 +1,4 @@
-package hr.antitalent.tanks_backend.models;
+package hr.antitalent.tanks_backend.websocket.chat;
 
 import lombok.Data;
 

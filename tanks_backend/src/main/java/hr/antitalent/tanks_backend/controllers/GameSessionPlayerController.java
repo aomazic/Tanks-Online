@@ -1,7 +1,7 @@
 package hr.antitalent.tanks_backend.controllers;
 
-import hr.antitalent.tanks_backend.dto.GameSessionPlayerUpdateDTO;
-import hr.antitalent.tanks_backend.models.GameSessionPlayer;
+import hr.antitalent.tanks_backend.dto.game.GameSessionPlayerUpdateDTO;
+import hr.antitalent.tanks_backend.domain.GameSessionPlayer;
 import hr.antitalent.tanks_backend.services.GameSessionPlayerService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

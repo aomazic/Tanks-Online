@@ -1,6 +1,6 @@
 package hr.antitalent.tanks_backend.configurations;
 
-import hr.antitalent.tanks_backend.models.ChatMessage;
+import hr.antitalent.tanks_backend.websocket.chat.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

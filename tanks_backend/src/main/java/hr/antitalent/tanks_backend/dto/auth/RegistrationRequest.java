@@ -1,4 +1,4 @@
-package hr.antitalent.tanks_backend.dto;
+package hr.antitalent.tanks_backend.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
