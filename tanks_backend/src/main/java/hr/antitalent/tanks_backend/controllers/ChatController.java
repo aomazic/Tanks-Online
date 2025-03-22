@@ -62,7 +62,7 @@ public class ChatController {
     }
 
     @MessageMapping("/chat.join/{sessionId}")
-    public void addUser(
+    public void userJoinChat(
             @DestinationVariable String sessionId,
             @Payload ChatMessage chatMessage,
             SimpMessageHeaderAccessor headerAccessor) {

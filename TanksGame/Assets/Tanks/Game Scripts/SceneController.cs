@@ -17,7 +17,6 @@ public class SceneController : MonoBehaviour
         }
     }
     
-    
     public static void LoadAuthScene()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("Auth");
@@ -26,5 +25,10 @@ public class SceneController : MonoBehaviour
     public static void LoadInitializing()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("Initializing");
+    }
+    
+    public static void LoadMainMenu()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
     }
 }

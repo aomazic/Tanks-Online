@@ -14,13 +14,13 @@ public class ProjectileEvent {
     private String playerId;
 
     // Starting position and trajectory
-    private double originX;
+    private double originX; 
     private double originY;
     private double angle;
 
     // Projectile properties
-    private double speed;
-    private int damage;
+    private float speed;
+    private float damage;
     private String projectileType;
     
     private long timestamp;

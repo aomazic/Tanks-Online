@@ -161,6 +161,7 @@ public class WebClient : MonoBehaviour, IWebClient
     {
         var form = new WWWForm();
         form.AddField("name", name);
+        form.AddField("hostId", UserInfoController.GetUserId().ToString());
         
         if (!string.IsNullOrEmpty(password))
         {

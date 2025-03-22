@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class ProjectileTurretController : TurretControllerBase<ProjectileCannonEffects>
 {
@@ -33,11 +35,12 @@ public class ProjectileTurretController : TurretControllerBase<ProjectileCannonE
     
     protected override void HandleFireInput()
     {
-        if(canFire && projectiles.Count > 0)
-        {
-            StartCoroutine(FireCooldown());
-            FireProjectile();
-        }
+        if (!canFire || projectiles.Count <= 0)
+            return;
+    
+        _ = SendFireMessageAsync();
+        StartCoroutine(FireCooldown());
+        FireProjectile();
     }
     
     private (GameObject projectile, Rigidbody2D rb) GetNextProjectile()
@@ -98,5 +101,25 @@ public class ProjectileTurretController : TurretControllerBase<ProjectileCannonE
         projectile.SetActive(false);
         projectiles.Add(projectiles.Count, (projectile, rb));
         crosshair.SetAmmoText(projectiles.Keys.Count, projectileTurretConfig.totalAmmo);
+    }
+    
+    private async Task SendFireMessageAsync()
+    {
+        try
+        {
+            // Calculate angle in radians from the aim direction
+            float angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
+        
+            await playerMpController.SendFireProjectileMessage(
+                angle, 
+                projectileTurretConfig.projectileSpeed,
+                projectileTurretConfig.projectileDamage,
+                "standard" // projectile type
+            );
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to send fire message: {ex.Message}");
+        }
     }
 }

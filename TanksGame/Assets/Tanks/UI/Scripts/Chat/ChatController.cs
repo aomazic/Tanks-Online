@@ -15,7 +15,6 @@ public class ChatController : MonoBehaviour
     [Header("Chat Display")]
     [SerializeField] private ScrollRect chatScrollRect;
     [SerializeField] private Transform chatContentTransform;
-
     
     private WebSocketController webSocketController;
 
@@ -32,8 +31,6 @@ public class ChatController : MonoBehaviour
         webSocketController.OnConnectionClosed += HandleConnectionClosed;
 
         chatInputField.onSubmit.AddListener(OnInputSubmit);
-        
-        _ = ConnectToChatAsync();
     }
 
     private void OnDisable()
@@ -46,27 +43,16 @@ public class ChatController : MonoBehaviour
         chatInputField.onSubmit.RemoveListener(OnInputSubmit);
     }
     
-    private async Task ConnectToChatAsync()
+    private async void OnInputSubmit(string text)
     {
-        try
+        if (string.IsNullOrWhiteSpace(text))
         {
-            await webSocketController.ConnectToChat();
+            return;
         }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Error connecting to chat: {ex.Message}");
-            HandleConnectionError(ex.Message);
-        }
-    }
-    
-    private void OnInputSubmit(string text)
-    {
-        if (!string.IsNullOrWhiteSpace(text))
-        {
-            SendMessage(text);
-            chatInputField.text = "";
-            chatInputField.ActivateInputField();
-        }
+
+        await SendMessageToChat(text);
+        chatInputField.text = "";
+        chatInputField.ActivateInputField();
     }
 
     private void HandleChatMessage(ChatMessage message)
@@ -134,8 +120,8 @@ public class ChatController : MonoBehaviour
         chatScrollRect.verticalNormalizedPosition = 0f;
     }
 
-    private void SendMessage(string message)
+    private async Task SendMessageToChat(string message)
     {
-        webSocketController.SendStompMessage(message);
+        await webSocketController.SendStompMessage(message);
     }
 }

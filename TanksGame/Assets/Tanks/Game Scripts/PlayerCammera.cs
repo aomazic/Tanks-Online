@@ -10,21 +10,21 @@ public class PlayerCammera : MonoBehaviour
     [Header("Boundary Settings")]
     [SerializeField] private Collider2D levelBounds;
     
-    private Camera camera;
+    private Camera mainCamera;
     private Vector3 velocity = Vector3.zero;
     private float aspectRatio;
     private float orthographicSize;
 
     private void Awake()
     {
-        camera = GetComponent<Camera>();
+        mainCamera = GetComponent<Camera>();
         CacheCameraProperties();
     }
 
     private void CacheCameraProperties()
     {
-        aspectRatio = camera.aspect;
-        orthographicSize = camera.orthographicSize;
+        aspectRatio = mainCamera.aspect;
+        orthographicSize = mainCamera.orthographicSize;
     }
 
     private void LateUpdate()
@@ -86,7 +86,7 @@ public class PlayerCammera : MonoBehaviour
     #if UNITY_EDITOR
     private void OnValidate()
     {
-        if (!camera) camera = GetComponent<Camera>();
+        if (!mainCamera) mainCamera = GetComponent<Camera>();
         CacheCameraProperties();
     }
     #endif

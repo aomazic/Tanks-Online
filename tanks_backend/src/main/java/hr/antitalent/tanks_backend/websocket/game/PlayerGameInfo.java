@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PlayerGameInfo {
-    // Player info
+    // Player info 1
     private String playerId;
     
     // Position and movement
@@ -23,9 +23,4 @@ public class PlayerGameInfo {
 
     // Tank state
     private int health;
-    private int score;
-
-    // Game state
-    private boolean alive;
-    private boolean connected;
 }

@@ -16,8 +16,8 @@ public class UserInfo : ScriptableObject
         set => InitUserDataIfNeeded().username = value; 
     }
     
-    public string UserId { 
-        get => userData?.id ?? string.Empty; 
+    public long UserId { 
+        get => userData?.id ?? 0;
         set => InitUserDataIfNeeded().id = value; 
     }
 

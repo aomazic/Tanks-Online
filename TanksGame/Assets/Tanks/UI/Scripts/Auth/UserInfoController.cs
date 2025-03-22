@@ -1,7 +1,4 @@
 using UnityEngine;
-
-using UnityEngine;
-
 public class UserInfoController : MonoBehaviour
 {
     [SerializeField] private UserInfo userInfoAsset;
@@ -54,6 +51,11 @@ public class UserInfoController : MonoBehaviour
     public static string GetToken()
     {
         return userInfoInstance.Token;
+    }
+    
+    public static long GetUserId()
+    {
+        return userInfoInstance.UserId;
     }
     
     public static void ClearUserData()

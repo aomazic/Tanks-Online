@@ -1,10 +1,8 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
 using System.Collections;
-using UnityEngine.Serialization;
 
-public class LoadingUI : MonoBehaviour
+public class InitializingUi : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private TMP_Text loadingText;
@@ -113,6 +111,7 @@ public class LoadingUI : MonoBehaviour
     private void OnLoadingComplete()
     {
         AppendText("Welcome Commander! All Systems Online.");
+        SceneController.LoadMainMenu();
     }
     
     private void UpdateContentHeight()

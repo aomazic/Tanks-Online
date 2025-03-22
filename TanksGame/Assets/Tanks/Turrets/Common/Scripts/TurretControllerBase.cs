@@ -1,3 +1,5 @@
+using System;
+using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
 public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEffects
@@ -11,8 +13,9 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
     
     [Header("References")]
     [SerializeField] protected MainCrosshair crosshair;
+    [SerializeField] protected PlayerMpController playerMpController;
     
-    private Vector2 aimDirection;
+    protected Vector2 aimDirection;
 
     protected T TowerEffects;
 
@@ -34,7 +37,7 @@ public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEf
     
     protected virtual void HandleFireInput()
     {
-
+    
     }
     
     protected virtual void HandleFireCanceled()

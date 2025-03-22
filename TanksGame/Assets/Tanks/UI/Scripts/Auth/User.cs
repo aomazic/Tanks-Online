@@ -2,7 +2,7 @@
 [System.Serializable]
 public class User
 {
-    public string id;
+    public long id;
     public string username;
     public string token;
 }

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class GameRoomsPanel : MonoBehaviour
 {
@@ -29,6 +30,8 @@ public class GameRoomsPanel : MonoBehaviour
         webClient ??= WebClient.Instance;
 
         scrollView = GetComponentInChildren<DynamicScrollView>();
+        scrollView.OnRoomSelected += HandleRoomItemClick;
+        
         refreshButton.onClick.AddListener(RefreshRooms);
     }
 
@@ -79,7 +82,14 @@ public class GameRoomsPanel : MonoBehaviour
 
     private void HandleRoomItemClick(int index)
     {
-        GameSession selectedRoom = roomsData[index];
+        Debug.Log($"Clicked room item: {index}");
+        
+        if (index < 0 || index >= roomsData.Count)
+        {
+            return;
+        }
+        
+        var selectedRoom = roomsData[index];
 
         if (!string.IsNullOrEmpty(selectedRoom.password))
         {
@@ -95,16 +105,29 @@ public class GameRoomsPanel : MonoBehaviour
     {
         // Implement password input UI
         Debug.Log($"Password required for room: {room.name}");
+        
+        // For now, let's just join the room directly
+        // In a real implementation, you would show a UI for password input
+        JoinRoom(room);
     }
 
     private void JoinRoom(GameSession room)
     {
         Debug.Log($"Joining room: {room.name}");
-        // Implement actual join logic
+        
+        // Save the game session data
+        GameSessionController.SaveGameSession(room);
+        
+        // Load the game scene
+        SceneManager.LoadScene("TD Test");
     }
 
     private void OnDestroy()
     {
-        refreshButton.onClick.RemoveAllListeners();
+        if (scrollView != null)
+            scrollView.OnRoomSelected -= HandleRoomItemClick;
+        
+        if (refreshButton != null)
+            refreshButton.onClick.RemoveAllListeners();
     }
 }

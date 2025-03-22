@@ -12,7 +12,6 @@ public class ConsoleController : MonoBehaviour
     
     [Header("Settings")]
     [SerializeField] private float typeSpeed = 0.05f;
-    [SerializeField] [TextArea(5,10)] private string defaultTerminalText = "";
 
     private Coroutine typingCoroutine;
     private ConsoleState currentState = ConsoleState.AuthMain;

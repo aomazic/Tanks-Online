@@ -38,7 +38,7 @@ public class GameSessionController : MonoBehaviour
         return gameSessionDataInstance;
     }
 
-    public String GetSessionId()
+    public long GetSessionId()
     {
         return gameSessionDataInstance.sessionId;
     }

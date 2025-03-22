@@ -73,11 +73,6 @@ public class GameController {
                 sessionId, projectileEvent.getPlayerId(),
                 projectileEvent.getOriginX(), projectileEvent.getOriginY());
 
-        // Set timestamp if not already set
-        if (projectileEvent.getTimestamp() == 0) {
-            projectileEvent.setTimestamp(System.currentTimeMillis());
-        }
-
         messagingTemplate.convertAndSend(
                 String.format(PROJECTILE_TOPIC_TEMPLATE, sessionId),
                 projectileEvent

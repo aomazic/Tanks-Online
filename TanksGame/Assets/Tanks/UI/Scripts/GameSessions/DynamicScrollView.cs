@@ -6,30 +6,50 @@ using System.Collections.Generic;
 [RequireComponent(typeof(ScrollRect))]
 public class DynamicScrollView : MonoBehaviour
 {
-    [Header("Settings")]
-    [SerializeField] private float itemSpacing = 10f;
-    [SerializeField] private float buffer = 100f;
-
     [Header("References")]
-    [SerializeField] private ScrollItem itemPrefab;
+    [SerializeField] private GameRoomItem itemPrefab;
     [SerializeField] private RectTransform content;
-    [SerializeField] private RectTransform viewport;
     
-    private float itemHeight;
-    private float viewportHeight;
-    private int visibleItemsCount;
-    private int currentTopIndex;
+    private List<GameRoomItem> roomItems = new List<GameRoomItem>();
     
-    private Pool<ScrollItem> itemPool;
+    public event System.Action<int> OnRoomSelected;
     
+    private void ClearItems()
+    {
+        foreach (var item in roomItems)
+        {
+            if (!item)
+            {
+                return;
+            }
+            item.OnClick -= HandleRoomItemClick;
+            Destroy(item.gameObject);
+        }
+        roomItems.Clear();
+    }
+
     public void FillData(List<GameSession> data)
     {
+        ClearItems();
+
         if (data.Count == 0) return;
 
-        foreach (var dataPoint in data)
+        for (int i = 0; i < data.Count; i++)
         {
             var item = Instantiate(itemPrefab, content);
-            item.SetData(dataPoint);
+            item.SetData(data[i], i);
+            item.OnClick += HandleRoomItemClick;
+            roomItems.Add(item);
         }
+    }
+    
+    private void HandleRoomItemClick(int index)
+    {
+        OnRoomSelected?.Invoke(index);
+    }
+    
+    private void OnDestroy()
+    {
+        ClearItems();
     }
 }
