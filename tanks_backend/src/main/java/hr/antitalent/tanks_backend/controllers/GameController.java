@@ -28,7 +28,7 @@ public class GameController {
     private final SimpMessagingTemplate messagingTemplate;
     private final GameEventService gameEventService;
 
-    private static final String GAME_JOIN_TOPIC_TEMPLATE = "/topic/game/%s";
+    private static final String GAME_TOPIC_TEMPLATE = "/topic/game/%s";
     private static final String PLAYER_UPDATE_TOPIC_TEMPLATE = "/topic/game/players/%s";
     private static final String PROJECTILE_TOPIC_TEMPLATE = "/topic/game/projectiles/%s";
 
@@ -45,7 +45,7 @@ public class GameController {
         log.info("Player joined game session: {}", sessionId);
 
         messagingTemplate.convertAndSend(
-                String.format(GAME_JOIN_TOPIC_TEMPLATE, sessionId),
+                String.format(GAME_TOPIC_TEMPLATE, sessionId),
                 gameEvent
         );
     }

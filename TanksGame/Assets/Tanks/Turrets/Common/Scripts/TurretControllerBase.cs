@@ -1,5 +1,3 @@
-using System;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
 public abstract class TurretControllerBase<T> : MonoBehaviour where T : TurretEffects

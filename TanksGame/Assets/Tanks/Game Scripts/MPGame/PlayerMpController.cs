@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -5,13 +6,16 @@ public class PlayerMpController : MonoBehaviour
 {
     [SerializeField] private TankController tankController;
     [SerializeField] private Transform turretTransform;
-
+    [SerializeField] private GameObject nonHostPlayerPrefab;
+    
     private WebSocketController webSocketController;
     private PlayerGameInfo playerInfo;
     private float updateInterval = 0.1f; // 10 updates per second
     private float timeSinceLastUpdate = 0f;
     private bool isInitialized = false;
-
+    
+    private Dictionary<long, nonHostController> remotePlayers = new Dictionary<long, nonHostController>();
+    
     void Awake()
     {
         webSocketController = WebSocketController.Instance;
@@ -38,7 +42,9 @@ public class PlayerMpController : MonoBehaviour
         {
             return;
         }
-
+        
+        webSocketController.OnPlayerGameInfoReceived += HandlePlayerInfo;
+        
         isInitialized = true;
         Debug.Log("PlayerMpController initialized");
     }
@@ -52,6 +58,42 @@ public class PlayerMpController : MonoBehaviour
 
         tankController.OnDamaged -= HandleTankDamaged;
         tankController.OnDestroyed -= HandleTankDestroyed;
+    }
+    
+    private void HandlePlayerInfo(PlayerGameInfo info)
+    {
+        // Ignore our own player info
+        if (info.playerId == playerInfo.playerId)
+            return;
+            
+        // Check if this is a new player
+        if (!remotePlayers.ContainsKey(info.playerId))
+        {
+            InstantiateRemotePlayer(info.playerId);
+        }
+    }
+    
+    private void InstantiateRemotePlayer(long playerId)
+    {
+        if (nonHostPlayerPrefab == null)
+        {
+            Debug.LogError("Cannot instantiate remote player: nonHostPlayerPrefab is not assigned");
+            return;
+        }
+        
+        var playerObject = Instantiate(nonHostPlayerPrefab, new Vector3(), Quaternion.identity);
+        var controller = playerObject.GetComponent<nonHostController>();
+        
+        if (controller != null)
+        {
+            controller.Initialize(playerId);
+            remotePlayers.Add(playerId, controller);
+            Debug.Log($"Remote player instantiated with ID: {playerId}");
+        }
+        else
+        {
+            Debug.LogError("Instantiated player prefab does not have a nonHostController component");
+        }
     }
 
     void Update()

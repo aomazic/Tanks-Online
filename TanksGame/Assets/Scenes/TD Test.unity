@@ -6623,6 +6623,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdaf113aa5e07134da6484bdc8da8ccc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  webSocketController: {fileID: 0}
 --- !u!114 &712383352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7593,6 +7594,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tankController: {fileID: 1375350534}
   turretTransform: {fileID: 1177794086}
+  nonHostPlayerPrefab: {fileID: 6247572479645396000, guid: df09b7e87417b4f43babc55a44bdeb7c,
+    type: 3}
 --- !u!1 &1467707185
 GameObject:
   m_ObjectHideFlags: 0
