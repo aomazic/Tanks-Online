@@ -9,17 +9,18 @@ public class GameSessionController : MonoBehaviour
     
     private void Awake()
     {
-        if (!gameSessionDataInstance )
+        if (!gameSessionDataInstance)
         {
             gameSessionDataInstance = sessionData;
+            // Make this GameObject a root object to ensure DontDestroyOnLoad works properly
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
         }
-    }
-    
+    }    
     public static void SaveGameSession(GameSession gameSession)
     {
         if (!gameSessionDataInstance)

@@ -564,10 +564,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tankTransform: {fileID: 2125856979899151707}
   turretTransform: {fileID: 8620073707171691551}
-  tankController: {fileID: 0}
-  tankRigidbody: {fileID: 0}
+  firePoint: {fileID: 4394814932163320009}
   positionLerpSpeed: 10
   rotationLerpSpeed: 15
+  projectilePrefab: {fileID: 2702618385891188024, guid: 6e0e333f2072fa540851e80b7264c922,
+    type: 3}
+  projectileSpeed: 10
 --- !u!1 &6579725613475450804
 GameObject:
   m_ObjectHideFlags: 0
@@ -799,7 +801,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 02a02a637d8b9fa4c9e59a209c95c2d8, type: 3}
   - {fileID: 8300000, guid: c0736e2e313462d418127116ffe7f26f, type: 3}
   - {fileID: 8300000, guid: 5c8d98e9d1a9b3842a3445ecc8f48799, type: 3}
-  reloadSound: {fileID: 0}
 --- !u!61 &1453094508351609569
 BoxCollider2D:
   m_ObjectHideFlags: 0

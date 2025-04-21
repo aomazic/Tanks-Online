@@ -111,6 +111,8 @@ public class InitializingUi : MonoBehaviour
     private void OnLoadingComplete()
     {
         AppendText("Welcome Commander! All Systems Online.");
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
         SceneController.LoadMainMenu();
     }
     

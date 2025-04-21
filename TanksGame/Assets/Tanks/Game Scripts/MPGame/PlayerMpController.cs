@@ -20,9 +20,6 @@ public class PlayerMpController : MonoBehaviour
     {
         webSocketController = WebSocketController.Instance;
         
-        // TODO: move this to another place later
-        _ = webSocketController.ConnectToServer();
-        
         // Create player info object
         playerInfo = new PlayerGameInfo
         {

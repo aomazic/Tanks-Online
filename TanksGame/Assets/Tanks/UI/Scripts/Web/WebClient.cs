@@ -37,6 +37,7 @@ public class WebClient : MonoBehaviour, IWebClient
         }
         else
         {
+            Debug.LogError($"Login failed: {request.error}");
             callback(false, request.error);
         }
     }
@@ -59,6 +60,7 @@ public class WebClient : MonoBehaviour, IWebClient
         }
         else
         {
+            Debug.LogError($"Register failed: {request.error}");
             callback(false, null);
         }
     }
@@ -78,6 +80,7 @@ public class WebClient : MonoBehaviour, IWebClient
             }
             else
             {
+                callback(true, "Username is available.");
                 callback(true, request.downloadHandler.text);
             }
         }
@@ -100,6 +103,7 @@ public class WebClient : MonoBehaviour, IWebClient
         }
         else
         {
+            Debug.LogError($"Guest register failed: {request.error}");
             callback(false, null);
         }
     }
@@ -128,6 +132,7 @@ public class WebClient : MonoBehaviour, IWebClient
         }
         else
         {
+            Debug.LogError($"Update user status failed: {request.error}");
             callback(false, request.error);
         }
     }
@@ -153,6 +158,7 @@ public class WebClient : MonoBehaviour, IWebClient
         }
         else
         {
+            Debug.LogError($"Get waiting game sessions failed: {request.error}");
             callback(false, request.error);
         }
     }

@@ -5,11 +5,17 @@ public class nonHostController : MonoBehaviour
     [Header("References")]
     [SerializeField] private Transform tankTransform;
     [SerializeField] private Transform turretTransform;
+    [SerializeField] private Transform firePoint;
 
     [Header("Settings")]
     [SerializeField] private float positionLerpSpeed = 10f;
     [SerializeField] private float rotationLerpSpeed = 15f;
     
+    [Header("Projectile Settings")]
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private float projectileSpeed = 10f;
+    
+    private ProjectileCannonEffects turretEffects;
     private bool isInitialized = false;
     private Vector2 targetPosition;
     private float targetTankRotation;
@@ -22,6 +28,7 @@ public class nonHostController : MonoBehaviour
     public void Initialize(long remotePlayerId)
     {
         tankRigidbody = tankTransform.GetComponent<Rigidbody2D>();
+        turretEffects = GetComponentInChildren<ProjectileCannonEffects>();
         
         if (isInitialized)
             return;
@@ -62,10 +69,35 @@ public class nonHostController : MonoBehaviour
     
     private void HandleProjectileEvent(ProjectileEvent projectileEvent)
     {
-        // TODO: ADD fire projectile to the scene
+        // Only process events for this specific player
         if (projectileEvent.playerId != playerId)
             return;
+    
+        // Create projectile
+        var projectile = Instantiate(projectilePrefab);
+        var rb = projectile.GetComponent<Rigidbody2D>();
         
+        projectile.transform.position = firePoint.position;
+        projectile.SetActive(true);
+    
+        // Calculate direction from angle
+        var angle = projectileEvent.angle;
+        var fireDirection = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+    
+        // Set rotation and velocity
+        projectile.transform.rotation = Quaternion.LookRotation(Vector3.forward, fireDirection);
+        rb.linearVelocity = fireDirection * (projectileEvent.speed > 0 ? projectileEvent.speed : projectileSpeed);
+    
+        // Play turret effects
+        if (turretEffects != null)
+        {
+            turretEffects.Fire();
+        }
+        else
+        {
+            Debug.LogWarning("Turret effects component not assigned to non-host controller");
+        }
+    
         Debug.Log($"Remote player {playerId} fired projectile at angle {projectileEvent.angle}");
     }
     
@@ -73,26 +105,40 @@ public class nonHostController : MonoBehaviour
     {
         if (!isInitialized)
             return;
-            
+        
+        UpdatePosition();
+        UpdateTankRotation();
+        UpdateTurretRotation();
+        UpdatePhysicsVelocity();
+    }
+
+    private void UpdatePosition()
+    {
         // Smoothly move tank to target position
         tankTransform.position = Vector2.Lerp(
             tankTransform.position, 
             targetPosition, 
             positionLerpSpeed * Time.deltaTime
         );
-        
+    }
+
+    private void UpdateTankRotation()
+    {
         // Smoothly rotate tank hull
-        Vector3 currentRotation = tankTransform.eulerAngles;
-        float newZ = Mathf.LerpAngle(
+        var currentRotation = tankTransform.eulerAngles;
+        var newZ = Mathf.LerpAngle(
             currentRotation.z, 
             targetTankRotation, 
             rotationLerpSpeed * Time.deltaTime
         );
         tankTransform.eulerAngles = new Vector3(currentRotation.x, currentRotation.y, newZ);
-        
+    }
+
+    private void UpdateTurretRotation()
+    {
         // Smoothly rotate turret
-        Vector3 currentTurretRotation = turretTransform.eulerAngles;
-        float newTurretZ = Mathf.LerpAngle(
+        var currentTurretRotation = turretTransform.eulerAngles;
+        var newTurretZ = Mathf.LerpAngle(
             currentTurretRotation.z, 
             targetTurretRotation, 
             rotationLerpSpeed * Time.deltaTime
@@ -102,16 +148,18 @@ public class nonHostController : MonoBehaviour
             currentTurretRotation.y, 
             newTurretZ
         );
-        
-        // Update physics velocity if needed
-        if (tankRigidbody != null && lastPlayerInfo != null)
-        {
-            // Set velocity to create movement illusion
-            Vector2 velocity = lastPlayerInfo.isMoving ? 
-                (targetPosition - (Vector2)tankTransform.position).normalized * lastPlayerInfo.velocity : 
-                Vector2.zero;
-                
-            tankRigidbody.linearVelocity = velocity;
-        }
     }
-}
+
+    private void UpdatePhysicsVelocity()
+    {
+        // Update physics velocity if needed
+        if (!tankRigidbody || lastPlayerInfo == null)
+            return;
+
+        // Set velocity to create movement illusion
+        var velocity = lastPlayerInfo.isMoving ? 
+            (targetPosition - (Vector2)tankTransform.position).normalized * lastPlayerInfo.velocity : 
+            Vector2.zero;
+
+        tankRigidbody.linearVelocity = velocity;
+    }}

@@ -5,7 +5,6 @@ public class ProjectileCannonEffects : TurretEffects
 {
     [Header("Audio")]
     [SerializeField] protected List<AudioClip> fireSounds;
-    [SerializeField] protected AudioClip reloadSound;
     
     private int fireHash;
     

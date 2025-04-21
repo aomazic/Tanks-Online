@@ -12,7 +12,12 @@ public class ConsoleController : MonoBehaviour
     
     [Header("Settings")]
     [SerializeField] private float typeSpeed = 0.05f;
-
+    
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip typingSound;
+    [SerializeField] private AudioClip clickSound;
+    
     private Coroutine typingCoroutine;
     private ConsoleState currentState = ConsoleState.AuthMain;
     
@@ -34,6 +39,11 @@ public class ConsoleController : MonoBehaviour
 
     public void OnSubmit()
     {
+        if (audioSource != null && clickSound != null)
+        {
+            audioSource.clip = clickSound;
+            audioSource.Play();
+        }
         var userInput = consoleInput.text.Trim().ToLower();
         consoleInput.text = "";
 
@@ -315,6 +325,13 @@ public class ConsoleController : MonoBehaviour
         {
             StopCoroutine(typingCoroutine);
         }
+
+        if (audioSource != null && typingSound != null)
+        {
+            audioSource.clip = typingSound;
+            audioSource.loop = true;
+            audioSource.Play();
+        }
         typingCoroutine = StartCoroutine(TypeTextCoroutine(text, textComponent, nextText));
     }
 
@@ -327,6 +344,10 @@ public class ConsoleController : MonoBehaviour
             yield return new WaitForSeconds(typeSpeed);
         }
 
+        if (audioSource != null && typingSound != null)
+        {
+            audioSource.Stop();
+        }
         if (!string.IsNullOrEmpty(nextText))
         {
             yield return StartCoroutine(TypeTextCoroutine(nextText, textComponent));

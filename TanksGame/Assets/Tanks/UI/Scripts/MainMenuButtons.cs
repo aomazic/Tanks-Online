@@ -26,14 +26,14 @@ public class MainMenuButtons : MonoBehaviour
         }
     }
     
-    public void HandleGoBack()
+    public void HandleGoBack(GameObject parentPanel)
     {
-        // Disable the Find Game UI object
-        if (findGamePanel != null)
+        if (parentPanel != null)
         {
-            findGamePanel.SetActive(false);
+            parentPanel.SetActive(false);
         }
-        // Enable other UI objects
+        
+        // Enable the main panel
         if (mainPanel != null)
         {
             mainPanel.SetActive(true);

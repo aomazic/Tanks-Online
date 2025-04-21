@@ -9,6 +9,7 @@ public class CreateRoomForm : MonoBehaviour
     [SerializeField] private TMP_InputField passwordInputField;
     [SerializeField] private Button createButton;
     [SerializeField] private GameObject sessionPanel;
+    [SerializeField] private GameObject parentPanel;
 
     [Header("Settings")]
     [SerializeField] private int minCharLength = 3;
@@ -55,12 +56,13 @@ public class CreateRoomForm : MonoBehaviour
                 Debug.Log($"Game session created successfully: {gameSession.id}");
 
                 ClearForm();
-                gameObject.SetActive(false);
+                parentPanel.SetActive(false);
                 sessionPanel.SetActive(true);
             }
             else
             {
                 Debug.LogError("Failed to create game session");
+                
      
                 createButton.interactable = true;
             }

@@ -18,21 +18,25 @@ public class ChatController : MonoBehaviour
     
     private WebSocketController webSocketController;
 
-    private void Awake()
-    {
+    private void Awake() {
         webSocketController = WebSocketController.Instance;
     }
 
     private void OnEnable()
     {
+        // TODO: move this to another place later
+        _ = webSocketController.ConnectToServer();
+        
+        CleanUpOldMessages();
+        
         webSocketController.OnChatMessageReceived += HandleChatMessage;
         webSocketController.OnConnectionOpened += HandleConnectionOpened;
         webSocketController.OnConnectionError += HandleConnectionError;
         webSocketController.OnConnectionClosed += HandleConnectionClosed;
 
-        chatInputField.onSubmit.AddListener(OnInputSubmit);
+        chatInputField.onSubmit.AddListener(OnInputSubmitWrapper);
     }
-
+    
     private void OnDisable()
     {
         webSocketController.OnChatMessageReceived -= HandleChatMessage;
@@ -40,10 +44,21 @@ public class ChatController : MonoBehaviour
         webSocketController.OnConnectionError -= HandleConnectionError;
         webSocketController.OnConnectionClosed -= HandleConnectionClosed;
 
-        chatInputField.onSubmit.RemoveListener(OnInputSubmit);
+        chatInputField.onSubmit.RemoveListener(OnInputSubmitWrapper);
     }
     
-    private async void OnInputSubmit(string text)
+    private void OnInputSubmitWrapper(string text)
+    {
+        _ = OnInputSubmit(text).ContinueWith(task =>
+        {
+            if (task.Exception != null)
+            {
+                Debug.LogError($"Error in OnInputSubmit: {task.Exception}");
+            }
+        }, TaskContinuationOptions.OnlyOnFaulted);
+    }
+    
+    private async Task OnInputSubmit(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -87,6 +102,14 @@ public class ChatController : MonoBehaviour
         };
         
         DisplayMessage(systemMessage);
+    }
+    
+    private void CleanUpOldMessages()
+    {
+        foreach (Transform child in chatContentTransform)
+        {
+            Destroy(child.gameObject);
+        }
     }
 
     private void DisplayMessage(ChatMessage message)

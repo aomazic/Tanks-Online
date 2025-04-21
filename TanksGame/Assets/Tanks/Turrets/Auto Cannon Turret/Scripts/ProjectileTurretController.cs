@@ -37,8 +37,7 @@ public class ProjectileTurretController : TurretControllerBase<ProjectileCannonE
     {
         if (!canFire || projectiles.Count <= 0)
             return;
-    
-        _ = SendFireMessageAsync();
+        
         StartCoroutine(FireCooldown());
         FireProjectile();
     }
@@ -65,8 +64,11 @@ public class ProjectileTurretController : TurretControllerBase<ProjectileCannonE
 
         Vector2 fireDirection = transform.up; 
         projectile.transform.rotation = Quaternion.LookRotation(Vector3.forward, fireDirection);
+        
         rb.linearVelocity = fireDirection * projectileTurretConfig.projectileSpeed;
-
+        
+        _ = SendFireMessageAsync(Mathf.Atan2(transform.up.y, transform.up.x));
+        
         TowerEffects.Fire();
         
         crosshair.SetAmmoText(projectiles.Keys.Count, projectileTurretConfig.totalAmmo);
@@ -103,13 +105,10 @@ public class ProjectileTurretController : TurretControllerBase<ProjectileCannonE
         crosshair.SetAmmoText(projectiles.Keys.Count, projectileTurretConfig.totalAmmo);
     }
     
-    private async Task SendFireMessageAsync()
+    private async Task SendFireMessageAsync(float angle)
     {
         try
         {
-            // Calculate angle in radians from the aim direction
-            float angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
-        
             await playerMpController.SendFireProjectileMessage(
                 angle, 
                 projectileTurretConfig.projectileSpeed,

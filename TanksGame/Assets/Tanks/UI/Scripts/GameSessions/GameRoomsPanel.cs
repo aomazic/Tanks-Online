@@ -24,7 +24,7 @@ public class GameRoomsPanel : MonoBehaviour
         webClient = client;
     }
 
-    private void Start()
+    private void Awake()
     {
         // If no custom client was injected, fallback to WebClient.Instance.
         webClient ??= WebClient.Instance;

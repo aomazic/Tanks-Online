@@ -5,9 +5,9 @@ public class ProjectileEvent
     public long playerId;
 
     // Starting position and trajectory
-    public double originX;
-    public double originY;
-    public double angle;
+    public float originX;
+    public float originY;
+    public float angle;
 
     // Projectile properties
     public float speed;
