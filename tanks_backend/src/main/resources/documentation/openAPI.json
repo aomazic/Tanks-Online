@@ -1,0 +1,1755 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Tanks Online API",
+    "description": "API documentation for ATA systems multiplayer game",
+    "contact": {
+      "name": "Antitalent Team",
+      "email": "omazicantonio7@gmail.com"
+    },
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Game Session Players",
+      "description": "Endpoints for managing players within game sessions"
+    },
+    {
+      "name": "Authentication",
+      "description": "Endpoints for user registration, login, and authentication"
+    },
+    {
+      "name": "Game Sessions",
+      "description": "Endpoints for managing game sessions"
+    },
+    {
+      "name": "Game",
+      "description": "Endpoints for real-time game interactions and event management"
+    },
+    {
+      "name": "Chat",
+      "description": "Endpoints for in-game chat functionality including WebSocket handlers"
+    },
+    {
+      "name": "Admin Operations",
+      "description": "Administrative endpoints for user management"
+    },
+    {
+      "name": "User Management",
+      "description": "Endpoints for managing user accounts and statuses"
+    }
+  ],
+  "paths": {
+    "/api/game-sessions/{sessionId}/players/{playerId}": {
+      "get": {
+        "tags": [
+          "Game Session Players"
+        ],
+        "summary": "Get player details",
+        "description": "Retrieves details of a specific player in a game session",
+        "operationId": "getPlayerById",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "ID of the game session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "playerId",
+            "in": "path",
+            "description": "ID of the player to retrieve",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Player not found in session",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionPlayer"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Player found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionPlayer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Game Session Players"
+        ],
+        "summary": "Update player in session",
+        "description": "Updates a player's details in a game session",
+        "operationId": "updatePlayerInSession",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "ID of the game session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "playerId",
+            "in": "path",
+            "description": "ID of the player to update",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameSessionPlayerUpdateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Player not found in session",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionPlayer"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid update data",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionPlayer"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Player updated successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionPlayer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game-sessions/{sessionId}/players/{playerId}/leave": {
+      "put": {
+        "tags": [
+          "Game Session Players"
+        ],
+        "summary": "Player leaves session",
+        "description": "Removes a player from a game session",
+        "operationId": "removePlayerFromSession",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "ID of the game session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "playerId",
+            "in": "path",
+            "description": "ID of the player to remove",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Player removed from session successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Player not found in session",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game-sessions/{gameSessionId}/start": {
+      "put": {
+        "tags": [
+          "Game Sessions"
+        ],
+        "summary": "Start game session",
+        "description": "Starts an existing game session by its ID",
+        "operationId": "startGameSession",
+        "parameters": [
+          {
+            "name": "gameSessionId",
+            "in": "path",
+            "description": "ID of the game session to start",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Game session cannot be started",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSession"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game session not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSession"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Game session started successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSession"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game-sessions/{gameSessionId}/end": {
+      "put": {
+        "tags": [
+          "Game Sessions"
+        ],
+        "summary": "End game session",
+        "description": "Ends a running game session and records the results",
+        "operationId": "endGameSession",
+        "parameters": [
+          {
+            "name": "gameSessionId",
+            "in": "path",
+            "description": "ID of the game session to end",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameSessionUpdateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Game session cannot be ended",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSession"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Game session ended successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSession"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game session not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSession"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/{userName}/status": {
+      "post": {
+        "tags": [
+          "User Management"
+        ],
+        "summary": "Update user status",
+        "description": "Updates a user's online status by username",
+        "operationId": "updateUserStatus",
+        "parameters": [
+          {
+            "name": "userName",
+            "in": "path",
+            "description": "Username of the user to update",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newStatus",
+            "in": "query",
+            "description": "New status to set",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OFFLINE",
+                "IN_GAME",
+                "BANNED",
+                "INACTIVE"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid status update request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Status updated successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game-sessions": {
+      "get": {
+        "tags": [
+          "Game Sessions"
+        ],
+        "summary": "Get all game sessions",
+        "description": "Retrieves a paginated list of all game sessions",
+        "operationId": "getAllGameSessions",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "description": "Pagination parameters",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game sessions retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Game Sessions"
+        ],
+        "summary": "Create game session",
+        "description": "Creates a new game session with the provided details",
+        "operationId": "createGameSession",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameSessionCreateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Game session created successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSession"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid game session data",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSession"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game-sessions/{sessionId}/players/{userId}": {
+      "post": {
+        "tags": [
+          "Game Session Players"
+        ],
+        "summary": "Add player to game session",
+        "description": "Adds a player to an existing game session",
+        "operationId": "createGameSessionPlayer",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "ID of the game session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user to add as player",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Player added to session successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionPlayer"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Player could not be added to session",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionPlayer"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game session not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionPlayer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game-sessions/{sessionId}/events": {
+      "get": {
+        "tags": [
+          "Game"
+        ],
+        "summary": "Get game events",
+        "description": "Retrieves all events for a specific game session",
+        "operationId": "getGameEvents",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "ID of the game session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Game session not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GameEvent"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Events retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GameEvent"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Game"
+        ],
+        "summary": "Create game event",
+        "description": "Records a new game event for a specified session",
+        "operationId": "createGameEvent",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "ID of the game session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameEvent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid event data",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameEvent"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Event created successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameEvent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Register a new user",
+        "description": "Creates a new user account with the provided credentials",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid registration data or username already exists",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "User successfully registered",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login",
+        "description": "Authenticates a user and returns a JWT token",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid credentials",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/guest": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Register a guest user",
+        "description": "Creates a temporary guest account for anonymous users",
+        "operationId": "registerGuest",
+        "responses": {
+          "400": {
+            "description": "Failed to register guest user",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Guest user successfully registered",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game-sessions/{sessionId}/players": {
+      "get": {
+        "tags": [
+          "Game Session Players"
+        ],
+        "summary": "Get all players in session",
+        "description": "Retrieves a list of all players in a game session",
+        "operationId": "getAllPlayersInSession",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "ID of the game session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Players retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GameSessionPlayer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Game Session Players"
+        ],
+        "summary": "Remove all players from session",
+        "description": "Removes all players from a game session",
+        "operationId": "removeAllPlayersFromSession",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "ID of the game session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Game session not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "All players removed from session successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game-sessions/{sessionId}/players/top": {
+      "get": {
+        "tags": [
+          "Game Session Players"
+        ],
+        "summary": "Get top players by score",
+        "description": "Retrieves the top-scoring players in a game session",
+        "operationId": "getTopPlayersInSession",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "ID of the game session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of top players to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top players retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GameSessionPlayer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game-sessions/{gameSessionName}": {
+      "get": {
+        "tags": [
+          "Game Sessions"
+        ],
+        "summary": "Get game session by name",
+        "description": "Retrieves a game session by its unique name",
+        "operationId": "getGameSessionByName",
+        "parameters": [
+          {
+            "name": "gameSessionName",
+            "in": "path",
+            "description": "Name of the game session to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game session found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSession"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game session not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSession"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game-sessions/status/{status}": {
+      "get": {
+        "tags": [
+          "Game Sessions"
+        ],
+        "summary": "Get game sessions by status",
+        "description": "Retrieves a paginated list of game sessions with the specified status",
+        "operationId": "getGameSessionsByStatus",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "path",
+            "description": "Status of the game sessions to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "WAITING",
+                "IN_PROGRESS",
+                "FINISHED"
+              ]
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "description": "Pagination parameters",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game sessions retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/{sessionId}": {
+      "get": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Get chat history",
+        "description": "Retrieves chat message history for a specific game session",
+        "operationId": "getChatHistory",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "description": "ID of the game session",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid session ID or other error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatMessage"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Chat history retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatMessage"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/{username}": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Check username availability",
+        "description": "Verifies if a username is available for registration",
+        "operationId": "isUsernameAvailable",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "Username to check for availability",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid username format",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Username availability checked",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/game-sessions/{gameSessionId}": {
+      "delete": {
+        "tags": [
+          "Game Sessions"
+        ],
+        "summary": "Delete game session",
+        "description": "Deletes a game session by its ID",
+        "operationId": "deleteGameSession",
+        "parameters": [
+          {
+            "name": "gameSessionId",
+            "in": "path",
+            "description": "ID of the game session to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Game session not found"
+          },
+          "204": {
+            "description": "Game session deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/admin/delete": {
+      "delete": {
+        "tags": [
+          "Admin Operations"
+        ],
+        "summary": "Delete user",
+        "description": "Deletes a user account by ID (admin only)",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "ID of the user to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Not authorized to perform this action",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user ID or deletion failed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "User successfully deleted",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/hello": {
+      "get": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "hello",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "hello_2",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "hello_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "hello_3",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "hello_6",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "hello_5",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "hello_4",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GameSessionPlayerUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "team": {
+            "type": "string"
+          },
+          "kills": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "deaths": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Updated player information"
+      },
+      "GameSession": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "hostId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "maxPlayers": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "WAITING",
+              "IN_PROGRESS",
+              "FINISHED"
+            ]
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "players": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameSessionPlayer"
+            }
+          }
+        }
+      },
+      "GameSessionPlayer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "player": {
+            "$ref": "#/components/schemas/User"
+          },
+          "gameSession": {
+            "$ref": "#/components/schemas/GameSession"
+          },
+          "kills": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "deaths": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "leftAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "GrantedAuthority": {
+        "type": "object",
+        "properties": {
+          "authority": {
+            "type": "string"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "username": {
+            "type": "string"
+          },
+          "passwordHash": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "GUEST",
+              "PLAYER",
+              "ADMIN"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ONLINE",
+              "OFFLINE",
+              "IN_GAME",
+              "BANNED",
+              "INACTIVE"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastLogin": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userStats": {
+            "$ref": "#/components/schemas/UserStats"
+          },
+          "password": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "authorities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GrantedAuthority"
+            }
+          },
+          "accountNonExpired": {
+            "type": "boolean"
+          },
+          "accountNonLocked": {
+            "type": "boolean"
+          },
+          "credentialsNonExpired": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UserStats": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "wins": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "losses": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "kills": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "deaths": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "matchesPlayed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "GameSessionUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "winningTeam": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "description": "Game session update details"
+      },
+      "GameSessionCreateDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "hostId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "description": "Game session creation details"
+      },
+      "GameEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "gameSessionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "eventType": {
+            "type": "string",
+            "enum": [
+              "KILL",
+              "DEATH",
+              "WIN",
+              "LOSE",
+              "JOIN",
+              "LEAVE"
+            ]
+          },
+          "eventTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "event_summary": {
+            "type": "string"
+          }
+        }
+      },
+      "RegistrationRequest": {
+        "required": [
+          "email",
+          "password",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "username": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "AuthRequest": {
+        "required": [
+          "password",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "Pageable": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Page": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "empty": {
+            "type": "boolean"
+          },
+          "sorted": {
+            "type": "boolean"
+          },
+          "unsorted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ChatMessage": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "sender": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sessionId": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

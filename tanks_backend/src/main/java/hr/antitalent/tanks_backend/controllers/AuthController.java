@@ -4,6 +4,13 @@ import hr.antitalent.tanks_backend.dto.auth.AuthRequest;
 import hr.antitalent.tanks_backend.dto.auth.AuthResponse;
 import hr.antitalent.tanks_backend.dto.auth.RegistrationRequest;
 import hr.antitalent.tanks_backend.services.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Authentication", description = "Endpoints for user registration, login, and authentication")
 public class AuthController {
     private final AuthenticationService authenticationService;
 
@@ -24,6 +32,12 @@ public class AuthController {
      * @param request Registration data containing username, password, and email
      * @return ResponseEntity with authentication response containing id, username and token
      */
+    @Operation(summary = "Register a new user", description = "Creates a new user account with the provided credentials")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "User successfully registered",
+                content = @Content(schema = @Schema(implementation = AuthResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid registration data or username already exists")
+    })
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegistrationRequest request) {
         log.info("Processing registration request for username: {}", request.getUsername());
@@ -49,6 +63,12 @@ public class AuthController {
      * @param request Authentication data containing username and password
      * @return ResponseEntity with authentication response containing id, username and token
      */
+    @Operation(summary = "Login", description = "Authenticates a user and returns a JWT token")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login successful",
+                content = @Content(schema = @Schema(implementation = AuthResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid credentials")
+    })
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         log.info("Login attempt for username: {}", request.getUsername());
@@ -73,6 +93,12 @@ public class AuthController {
      *
      * @return ResponseEntity with authentication response containing id, username and token
      */
+    @Operation(summary = "Register a guest user", description = "Creates a temporary guest account for anonymous users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Guest user successfully registered",
+                    content = @Content(schema = @Schema(implementation = AuthResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Failed to register guest user")
+    })
     @PostMapping("/guest")
     public ResponseEntity<AuthResponse> registerGuest() {
         log.info("Processing guest registration request");
@@ -94,8 +120,16 @@ public class AuthController {
      * @param username The username to check
      * @return ResponseEntity with boolean value indicating if username is available
      */
+    @Operation(summary = "Check username availability", description = "Verifies if a username is available for registration")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Username availability checked",
+                    content = @Content(schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid username format")
+    })
     @GetMapping("/{username}")
-    public ResponseEntity<Boolean> isUsernameAvailable(@PathVariable String username) {
+    public ResponseEntity<Boolean> isUsernameAvailable(
+            @Parameter(description = "Username to check for availability", required = true)
+            @PathVariable String username) {
         log.debug("Checking username availability: {}", username);
 
         boolean isAvailable = authenticationService.checkUsername(username);

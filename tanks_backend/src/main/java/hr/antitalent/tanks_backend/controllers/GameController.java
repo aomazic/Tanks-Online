@@ -4,6 +4,14 @@ import hr.antitalent.tanks_backend.domain.GameEvent;
 import hr.antitalent.tanks_backend.services.GameEventService;
 import hr.antitalent.tanks_backend.websocket.game.PlayerGameInfo;
 import hr.antitalent.tanks_backend.websocket.game.ProjectileEvent;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,6 +32,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Game", description = "Endpoints for real-time game interactions and event management")
 public class GameController {
     private final SimpMessagingTemplate messagingTemplate;
     private final GameEventService gameEventService;
@@ -79,10 +88,16 @@ public class GameController {
         );
     }
 
+    @Operation(summary = "Create game event", description = "Records a new game event for a specified session")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Event created successfully",
+                content = @Content(schema = @Schema(implementation = GameEvent.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid event data")
+    })
     @PostMapping("/api/game-sessions/{sessionId}/events")
     public ResponseEntity<GameEvent> createGameEvent(
-            @PathVariable Long sessionId,
-            @RequestBody GameEvent gameEvent) {
+            @Parameter(description = "ID of the game session", required = true) @PathVariable Long sessionId,
+            @Parameter(description = "Event details", required = true) @RequestBody GameEvent gameEvent) {
         log.info("Creating game event for session: {}", sessionId);
         try {
             GameEvent savedEvent = gameEventService.saveGameEvent(gameEvent, sessionId);
@@ -93,8 +108,15 @@ public class GameController {
         }
     }
 
+    @Operation(summary = "Get game events", description = "Retrieves all events for a specific game session")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Events retrieved successfully",
+                content = @Content(array = @ArraySchema(schema = @Schema(implementation = GameEvent.class)))),
+        @ApiResponse(responseCode = "404", description = "Game session not found")
+    })
     @GetMapping("/api/game-sessions/{sessionId}/events")
-    public ResponseEntity<List<GameEvent>> getGameEvents(@PathVariable Long sessionId) {
+    public ResponseEntity<List<GameEvent>> getGameEvents(
+            @Parameter(description = "ID of the game session", required = true) @PathVariable Long sessionId) {
         log.info("Fetching game events for session: {}", sessionId);
         try {
             List<GameEvent> events = gameEventService.findEventsBySessionId(sessionId);
@@ -105,3 +127,4 @@ public class GameController {
         }
     }
 }
+

@@ -2,6 +2,14 @@ package hr.antitalent.tanks_backend.controllers;
 
 import hr.antitalent.tanks_backend.services.ChatMessageService;
 import hr.antitalent.tanks_backend.websocket.chat.ChatMessage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +27,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Chat", description = "Endpoints for in-game chat functionality including WebSocket handlers")
 public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
@@ -97,8 +106,15 @@ public class ChatController {
         }
     }
 
+    @Operation(summary = "Get chat history", description = "Retrieves chat message history for a specific game session")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Chat history retrieved successfully",
+                content = @Content(array = @ArraySchema(schema = @Schema(implementation = ChatMessage.class)))),
+        @ApiResponse(responseCode = "400", description = "Invalid session ID or other error")
+    })
     @GetMapping("/api/chat/{sessionId}")
-    public ResponseEntity<List<ChatMessage>> getChatHistory(@PathVariable String sessionId) {
+    public ResponseEntity<List<ChatMessage>> getChatHistory(
+            @Parameter(description = "ID of the game session", required = true) @PathVariable String sessionId) {
         log.info("REST request: Retrieving chat history for session: {}", sessionId);
         try {
             List<ChatMessage> messages = chatMessageService.getSessionMessages(sessionId);
@@ -110,3 +126,4 @@ public class ChatController {
         }
     }
 }
+
