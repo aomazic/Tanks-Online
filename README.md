@@ -1,20 +1,20 @@
-# Tanks-Online (ATA Systems)
+# ATA Systems(Learning Project)
 
-A cooperative PVE tower defense bullet hell multiplayer game with a Spring Boot backend.
+A learning project to build a multiplayer game system with a Spring Boot backend and Unity frontend.
 
-![Game Screenshot - Coming Soon](#)
+![Project Status: In Development](https://img.shields.io/badge/status-in%20development-yellow)
 
-## Project Overview
+## Learning Goals & Purpose
 
-Tanks-Online (ATA Systems) is a challenging multiplayer game where players control tanks in an 80s sci-fi military environment inspired by classics like Patlabor and Aliens. Players must cooperatively defend against waves of enemies by placing towers strategically while also avoiding direct attacks from mobs.
+This project serves as a personal learning platform to explore:
 
-### Current Development Status
+- Spring Boot backend development
+- Unity client-server integration patterns
+- Real-time communication with WebSockets
+- Authentication and session management for games
+- Multiplayer game architecture principles
 
-The project is in early development stages with the following features implemented:
-- User authentication system
-- Real-time chat functionality 
-- Basic game session connection
-- Basic player movement and controls
+The choice of Spring Boot was deliberate to enhance my Spring skills as working spring professionally can be stale and repetitive.
 
 ## Project Structure
 
@@ -23,37 +23,42 @@ This repository consists of two main components:
 1. **[TanksGame](/TanksGame/README.md)** - Unity-based front end game client
 2. **[tanks_backend](/tanks_backend/README.md)** - Spring Boot backend service
 
-## Development Motivation
+See the respective README files for specific details about each component.
 
-This project serves as a challenge to create a functioning multiplayer game with a Spring Boot backend. The choice of Spring was deliberate to improve and demonstrate Spring Boot knowledge while applying it to a game development context.
+## Current Development Status
 
-## Visual Style
+This project is in early development as a learning exercise. Key components implemented so far:
+- User authentication system
+- Real-time WebSocket communication
+- Game session management
+- Basic client-server interaction
 
-The game features a pixel art style with an 80s sci-fi military aesthetic, focusing on:
-- Retro-futuristic tanks and defense systems
-- Moody, atmospheric environments
-- Nostalgic visual cues reminiscent of classic sci-fi military media
+## Technical Focus Areas
 
-## Gameplay Concept
+- **Backend**: Spring Boot, WebSockets, JPA, Security
+- **Frontend**: Unity, C#, .NET
+- **Communication**: REST APIs and WebSocket protocols
+- **Architecture**: Service-oriented design with event-based communication
 
-In Tanks-Online, players will:
-- Control unique tanks with different abilities
-- Strategically place defense towers to fend off enemy waves
-- Coordinate with teammates to survive increasingly difficult encounters
-- Manage resources and upgrade paths for both tanks and towers
-- Navigate environmental hazards while battling enemies
-
-## Screenshots
-
-*(Coming soon)*
-- Login Screen
-- Main Menu
-- Game Session Setup
-- Gameplay with multiple players
-
-## Installation & Setup
+## Getting Started
 
 Please refer to the individual README files for the [game client](/TanksGame/README.md) and [backend service](/tanks_backend/README.md) for specific setup instructions.
+
+## About the Game
+
+- Tanks-Online is a cooperative PVE tower defense bullet hell multiplayer game where players control tanks to defend against waves of enemies. For detailed game information, see the [TanksGame README](/TanksGame/README.md).
+- Game builds as available for download in the [TanksGame builds](/TanksGame/builds) directory (needs backend running locally on 8080).
+
+## Learning Outcomes (So Far)
+
+- Implementation of WebSocket handlers for real-time game state synchronization
+- Implementing Game session chat functionality using WebSockets
+- Creation of a JWT-based authentication system for game clients
+- Development of session management for multiplayer coordination
+- Unity client integration with Spring Boot backend services
+
+## Future Learning Directions
+- Actually implementing the game mechanics so its somewhat playable :)
 
 ## License
 

@@ -95,7 +95,7 @@ The backend provides the following main features:
 
 Below is the Entity-Relationship Diagram of the database:
 
-![ER Diagram](/src/main/resources/documentation/ERDiagram.png)
+![ER Diagram](/tanks_backend/src/main/resources/documentation/ERDiagram.png)
 
 ## Project Structure
 
