@@ -30,6 +30,7 @@ public class ConsoleController : MonoBehaviour
     
     private void Start()
     {
+        user = new User();
         terminalText.text = TerminalTexts.GetTerminalText(currentState);
         TypeText("Welcome Commander! Type '1', '2', or '3' to proceed. To exit, type 'exit'", infoTextRef);
         consoleInput.ActivateInputField();
@@ -220,7 +221,7 @@ public class ConsoleController : MonoBehaviour
                     {
                         currentState = ConsoleState.RegisterUserName;
                         terminalText.text = TerminalTexts.GetTerminalText(currentState);
-                        TypeText(response, infoTextRef,"Username is taken! Enter a new username:");
+                        TypeText(response, infoTextRef, "Enter a new username:");
                         consoleInput.contentType = TMP_InputField.ContentType.Standard;
                     }
                 }));
@@ -257,7 +258,8 @@ public class ConsoleController : MonoBehaviour
                     {
                         currentState = ConsoleState.RegisterUserName;
                         terminalText.text = TerminalTexts.GetTerminalText(currentState);
-                        TypeText(userResponse.ToString(), infoTextRef, "Enter you username:");
+                        string errorMsg = userResponse != null ? userResponse.ToString() : "Registration failed! Please try again.";
+                        TypeText(errorMsg, infoTextRef, "Enter your username:");
                         consoleInput.contentType = TMP_InputField.ContentType.Standard;
                     }
                 }));

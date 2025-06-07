@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      track_turret_02_anim_4x_0: -951475249771829304
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

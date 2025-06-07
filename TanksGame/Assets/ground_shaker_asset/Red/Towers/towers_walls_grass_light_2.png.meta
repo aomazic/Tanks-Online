@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      towers_walls_grass_light_2_0: 7293128350292423202
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

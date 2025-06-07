@@ -42,15 +42,30 @@ public class WebClient : MonoBehaviour, IWebClient
         }
     }
     
+    [Serializable]
+    public class RegistrationData
+    {
+        public string username;
+        public string password;
+        public string email;
+    }
+
     public IEnumerator Register(string username, string password, string email, System.Action<bool, User> callback)
     {
-        var form = new WWWForm();
-        form.AddField("username", username);
-        form.AddField("password", password);
-        form.AddField("email", email);
+        var registrationData = new RegistrationData
+        {
+            username = username,
+            password = password,
+            email = email
+        };
+        string json = JsonUtility.ToJson(registrationData);
 
-        using var request = UnityWebRequest.Post($"{BaseUrl}/auth/register", form);
-    
+        using var request = new UnityWebRequest($"{BaseUrl}/auth/register", "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
@@ -60,7 +75,7 @@ public class WebClient : MonoBehaviour, IWebClient
         }
         else
         {
-            Debug.LogError($"Register failed: {request.error}");
+            Debug.LogError($"Registration failed: {request.error} | {request.downloadHandler.text}");
             callback(false, null);
         }
     }
@@ -73,7 +88,7 @@ public class WebClient : MonoBehaviour, IWebClient
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            bool doesUsernameExist = bool.Parse(request.downloadHandler.text);
+            bool doesUsernameExist = !bool.Parse(request.downloadHandler.text);
             if (doesUsernameExist)
             {
                 callback(false, "Username is not available.");
